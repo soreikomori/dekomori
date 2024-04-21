@@ -1,0 +1,15 @@
+# Put your token inbetween the quotation marks.
+token = "tokengoeshere"
+# This turns on debug logging in dekomori.log. You can also turn this on in any server where Dekomori is by doing `d!togglevblog global`.
+debug_logging = false
+
+# You can get these by doing right click on the command box (on top of the text bar) then copy ID when doing a command.
+# They only enable easy commands by clicking on them on the embeds or messages, nothing else.
+[command_ids]
+resume = 0
+pause = 0
+baitrole = 0
+toggle = 0
+rejoinchecker = 0
+set = 0
+help = 0

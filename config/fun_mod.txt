@@ -1,0 +1,5 @@
+[fight]
+Open thine eyes, o brilliant Dragon Bahamut! <userA> commands the mighty dragon to slay <userB>!
+
+[quotes]
+The Wicked Eye's power exceeds even **DEATH** itself!
