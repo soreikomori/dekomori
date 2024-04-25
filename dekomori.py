@@ -665,6 +665,8 @@ async def on_command_error(ctx, error):
         guildLogger.error(f"{ctx.author.name} tried to set an invalid number.")
         guildLogger.debug(f"{type(error)}: {error}")
     else:
+        if str(ctx.guild.id) not in guildsDB:
+            await ctx.send("There is no configuration for this server yet! This happens when I join a server while being offline.\nTo make a configuration for this server, the owner must do `d!remakeguildconfig [Server ID]`.")
         await ctx.send("I, uh, don't know what happened, actually... Try again!")
         guildLogger.error(f"{ctx.author.name} got an unknown error.")
         guildLogger.debug(f"{type(error)}: {error}")
