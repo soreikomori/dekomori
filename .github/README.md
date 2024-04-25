@@ -14,13 +14,16 @@ A Discord Bot that guards servers against spambots, scammers and such by impleme
 Dekomori is written in Python and uses discord.py. You can run it on your own machine or on a server, or you can use Docker to get it running in a few commands. If you know any other easy installation method such as docker compose, please let me know so I can add it here.
 ### 🐳 Docker
 You can get Dekomori running easily with a few commands. Just make sure you have docker and git installed in your system.
+0. If you're running Dekomori for the first time, it's advised to not invite her to your server before she's running. This is because she automatically creates a configuration file for a server when she joins it. You can recreate this file manually later, but it's easier to just let her do it on her own.
 1. Clone the repository with `git clone https://github.com/soreikomori/dekomori`.
 2. Navigate to the directory with `cd dekomori`.
-3. Populate the `config.toml` file with your bot token first and foremost. You can get a bot token from the [Discord Developer Portal](https://discord.com/developers/applications).
+3. Populate the `config.toml` file with your bot token first and foremost. You can get a bot token from the [Discord Developer Portal](https://discord.com/developers/applications). You can also customize the rest of the configuration file to your liking, but the commands need to be synced at least once first.
 4. Customize your Dockerfile however you wish. There is a sample Dockerfile "Dockerfile.example" in the repository that you can simply run if you want, just make sure to remove the `.example` extension.
-5. Build the container with `sudo docker build -t dekomori .`. 
+   1. Additionally, you can customize the fun_mod.txt file to your liking. This file contains the messages that Dekomori will send when you run the d!fight and d!chuuni commands. For d!fight, make sure to format the users as `<userA>` and `<userB>`. An example is provided in the file.
+5. Build the container with `docker build -t dekomori .`. 
 6. Run `docker run -d --name dekomori -v ./config:/app/config dekomori`.
-7. That's it! Dekomori should be running now. You can get an invite link from your Discord Developer Portal.
+7. Dekomori should be running now, and you can invite her to your server with the invite link generated in the Discord Developer Portal. Once you've done this, make her sync the commands with `d!sync`. You might need to restart your discord client to see the slash commands.
+8. If Dekomori joined your server before she was running, you will need to create default configuration files for your server. You can do this by running the `d!remakeguildconfig here` command in your server. If you don't have access to the server, you can run the `d!remakeguildconfig [Server ID]>` command anywhere.
    
 ## ❓ Support
 If you need help or want extra information about Dekomori, feel free to join the [support server](https://discord.gg/XwGnS3SwWZ)! I'll be happy to help you out.
