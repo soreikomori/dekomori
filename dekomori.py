@@ -3,7 +3,7 @@
 # Dekomori by soreikomori
 # Futsuwu ni nagareteku nichijou ni - muri shite najimaseta
 # Shizunjimatta koseitachi wo kande nonde haite warau
-version = "Closed Beta 1.2.1"
+version = "1.2.2"
 ################# IMPORTS #################
 
 import logging.handlers
@@ -420,6 +420,7 @@ async def on_member_update(before, after):
                         pingRole = discord.utils.get(guild.roles, id=guildsDB[guildId]["rejoin_checker"]["pingRoleId"])
                         await logChanObj.send(f"Oh? It looks like {member.mention} ({member.name}) has attempted to rejoin {maxJoinCount} times in a row now...! You should take a look, {pingRole.mention}, this could mean **DEATH**!")
                         if not guildsDB[guildId]["rejoin_checker"]["kickuser"]:
+                            await logChanObj.send(f"I won't kick them because they have rejoined many times in a row, though!")
                             return
                     guildLogger.info(f"Attempting to kick {member.name}.")
                     # Permissions Checker
