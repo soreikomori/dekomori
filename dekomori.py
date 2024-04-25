@@ -549,7 +549,7 @@ def guildCheck(ctx):
 async def on_command_error(ctx, error):
     guildLogger = logging.getLogger(str(ctx.guild.id))
     if str(ctx.guild.id) not in guildsDB:
-        await ctx.send("There is no configuration for this server yet! This happens when I join a server while being offline.\nTo make a configuration for this server, the owner must do `d!remakeguildconfig [Server ID]`.")
+        await ctx.send(f"There is no configuration for this server yet! This happens when I join a server while being offline.\nTo make a configuration for this server, the owner must do `d!remakeguildconfig {ctx.guild.id}`.")
         return
     if isinstance(error, commands.MissingPermissions):
         await ctx.send("Who are you, a fake?! You don't have the necessary permissions to try that command!")
