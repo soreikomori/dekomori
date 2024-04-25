@@ -548,6 +548,9 @@ def guildCheck(ctx):
 @client.event
 async def on_command_error(ctx, error):
     guildLogger = logging.getLogger(str(ctx.guild.id))
+    if str(ctx.guild.id) not in guildsDB:
+        await ctx.send("There is no configuration for this server yet! This happens when I join a server while being offline.\nTo make a configuration for this server, the owner must do `d!remakeguildconfig [Server ID]`.")
+        return
     if isinstance(error, commands.MissingPermissions):
         await ctx.send("Who are you, a fake?! You don't have the necessary permissions to try that command!")
         guildLogger.error(f"{ctx.author.name} tried to use a command without the necessary permissions.")
@@ -665,8 +668,6 @@ async def on_command_error(ctx, error):
         guildLogger.error(f"{ctx.author.name} tried to set an invalid number.")
         guildLogger.debug(f"{type(error)}: {error}")
     else:
-        if str(ctx.guild.id) not in guildsDB:
-            await ctx.send("There is no configuration for this server yet! This happens when I join a server while being offline.\nTo make a configuration for this server, the owner must do `d!remakeguildconfig [Server ID]`.")
         await ctx.send("I, uh, don't know what happened, actually... Try again!")
         guildLogger.error(f"{ctx.author.name} got an unknown error.")
         guildLogger.debug(f"{type(error)}: {error}")
