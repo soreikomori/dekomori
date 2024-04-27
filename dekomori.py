@@ -3,7 +3,7 @@
 # Dekomori by soreikomori
 # Futsuwu ni nagareteku nichijou ni - muri shite najimaseta
 # Shizunjimatta koseitachi wo kande nonde haite warau
-version = "1.2.2"
+version = "1.2.3"
 ################# IMPORTS #################
 
 import logging.handlers
@@ -250,51 +250,68 @@ async def on_ready():
                 guild = discord.utils.get(client.guilds, id=int(guildId))
                 guildLogger = logging.getLogger(guildId)
                 logChanObj = discord.utils.get(guild.text_channels, id=guildsDB[guildId]["log_channel_id"])
-            for memberdict in guildsDB[guildId]["currenteval"]:
-                # Timeout Checker
-                timeElapsed = (datetime.datetime.now() - memberdict["joined"])
-                if timeElapsed >= datetime.timedelta(seconds=memberdict["timeout"]):
-                    member = discord.utils.get(guild.members, id=memberdict["memberid"])
-                    guildLogger.warning(f"{member.name} has reached the stall timeout.")
-                    # - - - - - - TIMEOUT ACTIONS - - - - - -
-                    # - - - - - Kick on Stall - - - - -
-                    parsedDuration = parseDuration(timeElapsed.seconds)
-                    if guildsDB[guildId]["kick_on_stall"]:
-                        # - - - - Kick Action - - - -
-                        guildLogger.info(f"Attempting to kick {member.name}.")
-                        # Permissions Check
-                        if not guild.me.guild_permissions.kick_members:
-                            guildLogger.critical(f"Missing permissions to kick {member.name}.")
-                            await logChanObj.send(f"I don't have the necessary permissions to kick {member.mention} ({member.name})! Please check my permissions and try again! I'll leave them be for now.")
-                        # DM Check
-                        if guildsDB[guildId]["dm_on_stallkick"]:
-                            guildLogger.info(f"Sending Stall Kick DM to {member.name}.")
-                            dmChan = await member.create_dm()
-                            await dmChan.send(content=guildsDB[guildId]["stall_dm_message"])
-                        # Kick Loop
-                        while True:
-                            try:
-                                await member.kick(reason="User didn't complete onboarding in time.")
-                            except discord.errors.HTTPException:
-                                guildLogger.error(f"Got an HTTPException while trying to kick {member.name}. Retrying...")
+                # Member in Guild Check
+                for memberdict in guildsDB[guildId]["currenteval"]:
+                    if guild.get_member(memberdict["memberid"]) is None:
+                        guildLogger.warning(f"Member {memberdict['memberid']} not found in guild. Removing from currentEval.")
+                        guildsDB[guildId]["currenteval"].remove(memberdict)
+                        guildLogger.debug(f"Removed {memberdict['memberid']} from currentEval.")
+                        with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
+                            toml.dump(guildsDB, f)
+                        globalLogger.debug(f"Wrote to guilds_db.toml.")
+                        continue
+                    else:
+                        # Timeout Checker
+                        timeElapsed = (datetime.datetime.now() - memberdict["joined"])
+                        guildLogger.debug(f"Time Elapsed for {guild.get_member(memberdict['memberid']).name}: {timeElapsed}")
+                        if timeElapsed >= datetime.timedelta(seconds=memberdict["timeout"]):
+                            member = discord.utils.get(guild.members, id=memberdict["memberid"])
+                            guildLogger.warning(f"{member.name} has reached the stall timeout.")
+                            # - - - - - - TIMEOUT ACTIONS - - - - - -
+                            # - - - - - Kick on Stall - - - - -
+                            parsedDuration = parseDuration(timeElapsed.seconds)
+                            if guildsDB[guildId]["kick_on_stall"]:
+                                # - - - - Kick Action - - - -
+                                guildLogger.info(f"Attempting to kick {member.name}.")
+                                # Permissions Check
+                                if not guild.me.guild_permissions.kick_members:
+                                    guildLogger.critical(f"Missing permissions to kick {member.name}.")
+                                    await logChanObj.send(f"I don't have the necessary permissions to kick {member.mention} ({member.name})! Please check my permissions and try again! I'll leave them be for now.")
+                                else:
+                                    # DM Check
+                                    if guildsDB[guildId]["dm_on_stallkick"]:
+                                        guildLogger.info(f"Sending Stall Kick DM to {member.name}.")
+                                        dmChan = await member.create_dm()
+                                        await dmChan.send(content=guildsDB[guildId]["stall_dm_message"])
+                                    # Kick Loop
+                                    while True:
+                                        try:
+                                            await member.kick(reason="User didn't complete onboarding in time.")
+                                        except discord.errors.HTTPException:
+                                            guildLogger.error(f"Got an HTTPException while trying to kick {member.name}. Retrying...")
+                                        else:
+                                            guildLogger.info(f"Kicked {member.name}.")
+                                            await logChanObj.send(f"{member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}, so I've _deathly_ kicked them away!")
+                                            guildsDB[guildId]["kick_counter"] += 1
+                                            guildLogger.debug(f"Added 1 to Kick Counter.")
+                                            with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
+                                                toml.dump(guildsDB, f)
+                                            globalLogger.debug(f"Wrote to guilds_db.toml.")
+                                            break
+                            # - - - - - No Action - - - - -
                             else:
-                                guildLogger.info(f"Kicked {member.name}.")
-                                await logChanObj.send(f"{member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}, so I've _deathly_ kicked them away!")
-                                guildsDB[guildId]["kick_counter"] += 1
-                                guildLogger.debug(f"Added 1 to Kick Counter.")
+                                await logChanObj.send(f"{member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}. They're still here, so you might want to check on them!")
+                                guildsDB[guildId]["currenteval"].remove(memberdict)
+                                guildLogger.debug(f"Removed {member.name} from currentEval.")
                                 with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
                                     toml.dump(guildsDB, f)
                                 globalLogger.debug(f"Wrote to guilds_db.toml.")
-                                break
-                    # - - - - - No Action - - - - -
-                    else:
-                        await logChanObj.send(f"{member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}. They're still here, so you might want to check on them!")
-                    # - - - - - Rejoin Check - - - - - -
-                    # The timeout rejoin check does not check for the rejoinchecker kick user setting.
-                    if execRejoinChecker(guild, member):
-                        maxJoinCount = guildsDB[guildId]["rejoin_checker"]["maxJoinCount"]
-                        pingRole = discord.utils.get(guild.roles, id=guildsDB[guildId]["rejoin_checker"]["pingRoleId"])
-                        await logChanObj.send(f"Oh? It looks like {member.mention} ({member.name}) has attempted to rejoin {maxJoinCount} times in a row now...! You should take a look, {pingRole.mention}, this could mean **DEATH**!")
+                            # - - - - - Rejoin Check - - - - - -
+                            # The timeout rejoin check does not check for the rejoinchecker kick user setting.
+                            if execRejoinChecker(guild, member):
+                                maxJoinCount = guildsDB[guildId]["rejoin_checker"]["maxJoinCount"]
+                                pingRole = discord.utils.get(guild.roles, id=guildsDB[guildId]["rejoin_checker"]["pingRoleId"])
+                                await logChanObj.send(f"Oh? It looks like {member.mention} ({member.name}) has attempted to rejoin {maxJoinCount} times in a row now...! You should take a look, {pingRole.mention}, this could mean **DEATH**!")
         await asyncio.sleep(1)
 
 @client.event
@@ -394,7 +411,7 @@ async def on_member_update(before, after):
                         return
                     # DM Checker
                     if guildsDB[guildId]["dm_on_ban"]:
-                        guildLogger.info(f"Sending Ban DM to {member.name}")
+                        guildLogger.info(f"Sending Ban DM to {member.name}...")
                         dmChan = await member.create_dm()
                         await dmChan.send(content=guildsDB[guildId]["ban_dm_message"])
                     # Ban Loop
