@@ -495,6 +495,12 @@ async def on_member_update(before, after):
             if wmCount > 0:
                 guildLogger.info(f"Deleted {member.name}'s welcome message{wmS}.")
                 await logChanObj.send(f"I also deleted {wmCount} welcome message{wmS}, they're not _deathly_ welcome here!")
+    if memberdict in guildsDB[guildId]["currenteval"]:
+        guildsDB[guildId]["currenteval"].remove(memberdict)
+        guildLogger.debug(f"Removed {after.name} from currentEval.")
+        with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
+            toml.dump(guildsDB, f)
+        globalLogger.debug(f"Wrote to guilds_db.toml.")
     return
 
 @client.event
