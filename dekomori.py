@@ -3,7 +3,7 @@
 # Dekomori by soreikomori
 # Futsuwu ni nagareteku nichijou ni - muri shite najimaseta
 # Shizunjimatta koseitachi wo kande nonde haite warau
-version = "1.2.4"
+version = "1.3.0"
 ################# IMPORTS #################
 
 import logging.handlers
@@ -236,12 +236,17 @@ async def on_ready():
     print(f"Logged in succesfully as {client.user}.")
     globalLogger.info(f" - - - DEKOMORI {version} STARTED - - - ")
     globalLogger.info(f"Setting up logger for guilds.")
+    # Rich Presence Setup
+    await client.change_presence(activity=discord.CustomActivity(name=globalConfig["rp_message"]))
+    globalLogger.info(f"Set Rich Presence Status.")
     for guild in client.guilds:
-        globalLogger.info(f"Setting up logger for {guild.name}.")
+        globalLogger.debug(f"Setting up logger for {guild.name}.")
         guildLogger = logging.getLogger(str(guild.id))
         setup_logger(guildLogger, guild)
-        globalLogger.info(f"Logger set up for {guild.name}.")
+        globalLogger.debug(f"Logger set up for {guild.name}.")
         guildLogger.info(f" - - -  RECONNECTED DEKOMORI {version} - - - ")
+    globalLogger.info(f"Logger set up for guilds.")
+    globalLogger.info(f" -- READY -- ")
     globalLogger.info(f"Beggining Stall Loop.")
     # STALL LOOP
     while True:
@@ -276,13 +281,16 @@ async def on_ready():
                                 # Permissions Check
                                 if not guild.me.guild_permissions.kick_members:
                                     guildLogger.critical(f"Missing permissions to kick {member.name}.")
-                                    await logChanObj.send(f"I don't have the necessary permissions to kick {member.mention} ({member.name})! Please check my permissions and try again! I'll leave them be for now.")
+                                    await logChanObj.send(f"⚠️ I don't have the necessary permissions to kick {member.mention} ({member.name})! Please check my permissions and try again! I'll leave them be for now.")
                                 else:
                                     # DM Check
                                     if guildsDB[guildId]["dm_on_stallkick"]:
                                         guildLogger.info(f"Sending Stall Kick DM to {member.name}.")
                                         dmChan = await member.create_dm()
-                                        await dmChan.send(content=guildsDB[guildId]["stall_dm_message"])
+                                        try:
+                                            await dmChan.send(content=guildsDB[guildId]["stall_dm_message"])
+                                        except discord.errors.Forbidden:
+                                            guildLogger.error(f"Couldn't send DM to {member.name}.")
                                     # Kick Loop
                                     while True:
                                         try:
@@ -291,7 +299,7 @@ async def on_ready():
                                             guildLogger.error(f"Got an HTTPException while trying to kick {member.name}. Retrying...")
                                         else:
                                             guildLogger.info(f"Kicked {member.name}.")
-                                            await logChanObj.send(f"{member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}, so I've _deathly_ kicked them away!")
+                                            await logChanObj.send(f"**Stall Kick:** {member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}, so I've _deathly_ kicked them away!")
                                             guildsDB[guildId]["kick_counter"] += 1
                                             guildLogger.debug(f"Added 1 to Kick Counter.")
                                             with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
@@ -300,7 +308,7 @@ async def on_ready():
                                             break
                             # - - - - - No Action - - - - -
                             else:
-                                await logChanObj.send(f"{member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}. They're still here, so you might want to check on them!")
+                                await logChanObj.send(f"**Stall Kick:** {member.mention} ({member.name}) joined earlier, but didn't complete onboarding in {parsedDuration}. They're still here, so you might want to check on them!")
                                 guildsDB[guildId]["currenteval"].remove(memberdict)
                                 guildLogger.debug(f"Removed {member.name} from currentEval.")
                                 with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
@@ -311,7 +319,8 @@ async def on_ready():
                             if execRejoinChecker(guild, member):
                                 maxJoinCount = guildsDB[guildId]["rejoin_checker"]["maxJoinCount"]
                                 pingRole = discord.utils.get(guild.roles, id=guildsDB[guildId]["rejoin_checker"]["pingRoleId"])
-                                await logChanObj.send(f"Oh? It looks like {member.mention} ({member.name}) has attempted to rejoin {maxJoinCount} times in a row now...! You should take a look, {pingRole.mention}, this could mean **DEATH**!")
+                                toggleId = globalConfig["command_ids"]["toggle"]
+                                await logChanObj.send(f"**⚠️ __Rejoin Checker Alert__**: Oh? It looks like {member.mention} ({member.name}) has attempted to rejoin {maxJoinCount} times in a row now...! You should take a look, {pingRole.mention}, this could mean **DEATH**!\n-# You can turn off the Rejoin Checker with `d!toggle rejoinchecker` or </toggle rejoinchecker:{toggleId}>.")
         await asyncio.sleep(1)
 
 @client.event
@@ -326,6 +335,7 @@ async def on_guild_join(guild):
                          "dm_on_kick": False,
                          "dm_on_ban": False,
                          "dm_on_stallkick": False,
+                         "spammer_check": False,
                          "rejoin_checker": {"enabled": False, "userId": 0, "joinCount": 0, "maxJoinCount": 0, "pingRoleId": 0, "kickuser": True},
                          "ban": False,
                          "log_channel_id": 0,
@@ -401,16 +411,21 @@ async def on_member_update(before, after):
     guildLogger.info(f"{member.name} has completed onboarding.")
     guildLogger.info(f"Evaluation beginning for {member.name}.")
     # ON SUCCESS
-    if evaluateBaitRoles(guildId, member):
+    if evaluateBaitRoles(guildId, member) or (member.public_flags.spammer and guildsDB[guildId]["spammer_check"]):
+        # Reasoning
+        reason = "bait" if evaluateBaitRoles(guildId, member) else "spamflag"
+        actionReason = "User had a bait role." if reason == "bait" else "User is flagged as a spammer by Discord."
+        banMessage = f"**User Banned:** Mjolnir Striker! {member.mention} ({member.name}) had a bait role and has been banned to **DEATH**!" if reason == "bait" else f"Mjolnir Striker! {member.mention} ({member.name}) was identified as a spammer by Discord and has been banned to **DEATH**!"
+        kickMessage = f"**User Kicked:** Mjolnir Tornado! {member.mention} ({member.name}) had a bait role and was _deathly_ kicked away!" if reason == "bait" else f"Mjolnir Tornado! {member.mention} ({member.name}) was identified as a spammer by Discord and was _deathly_ kicked away!"
         # If ban
         if guildsDB[guildId]["ban"]:
             guildLogger.info(f"Attempting to ban {member.name}.")
             # Permissions Checker
             if not guild.me.guild_permissions.ban_members:
                 guildLogger.critical(f"Missing permissions to ban {member.name}.")
-                await logChanObj.send(f"I don't have the necessary permissions to ban {member.mention} ({member.name})! Please check my permissions and try again. I'll pause my actions until then.")
+                await logChanObj.send(f"⚠️ I don't have the necessary permissions to ban {member.mention} ({member.name})! Please check my permissions and try again. I'll pause my actions until then.")
                 guildsDB[guildId]["paused"] = True
-                guildLogger.info(f"Pausing Dekomori ")
+                guildLogger.info(f"Pausing Dekomori.")
                 with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
                     toml.dump(guildsDB, f)
                 globalLogger.debug(f"Wrote to guilds_db.toml.")
@@ -423,12 +438,13 @@ async def on_member_update(before, after):
             # Ban Loop
             while True:
                 try:
-                    await member.ban(reason="User had a bait role.")
+                    
+                    await member.ban(reason=actionReason)
                 except discord.errors.HTTPException:
                     guildLogger.error(f"Got an HTTPException while trying to ban {member.name}. Retrying...")
                 else:
                     guildLogger.info(f"Banned {member.name}.")
-                    await logChanObj.send(f"Mjolnir Striker! {member.mention} ({member.name}) had a bait role and has been banned to **DEATH**!")
+                    await logChanObj.send(banMessage)
                     guildsDB[guildId]["ban_counter"] += 1
                     guildLogger.debug(f"Added 1 to Ban Counter.")
                     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
@@ -441,7 +457,8 @@ async def on_member_update(before, after):
             if execRejoinChecker(guild, member):
                 maxJoinCount = guildsDB[guildId]["rejoin_checker"]["maxJoinCount"]
                 pingRole = discord.utils.get(guild.roles, id=guildsDB[guildId]["rejoin_checker"]["pingRoleId"])
-                await logChanObj.send(f"Oh? It looks like {member.mention} ({member.name}) has attempted to rejoin {maxJoinCount} times in a row now...! You should take a look, {pingRole.mention}, this could mean **DEATH**!")
+                toggleId = globalConfig["command_ids"]["toggle"]
+                await logChanObj.send(f"**⚠️ __Rejoin Checker Alert__**: Oh? It looks like {member.mention} ({member.name}) has attempted to rejoin {maxJoinCount} times in a row now...! You should take a look, {pingRole.mention}, this could mean **DEATH**!\n-# You can turn off the Rejoin Checker with `d!toggle rejoinchecker` or </toggle rejoinchecker:{toggleId}>.")
                 if not guildsDB[guildId]["rejoin_checker"]["kickuser"]:
                     await logChanObj.send(f"I won't kick them because they have rejoined many times in a row, though!")
                     return
@@ -449,18 +466,21 @@ async def on_member_update(before, after):
             # Permissions Checker
             if not guild.me.guild_permissions.kick_members:
                 guildLogger.critical(f"Missing permissions to kick {member.name}.")
-                await logChanObj.send(f"I don't have the necessary permissions to kick {member.mention} ({member.name})! Please check my permissions and try again. I'll pause my actions until then.")
+                await logChanObj.send(f"⚠️ I don't have the necessary permissions to kick {member.mention} ({member.name})! Please check my permissions and try again. I'll pause my actions until then.")
                 guildsDB[guildId]["paused"] = True
-                guildLogger.info(f"Pausing Dekomori ")
+                guildLogger.info(f"Pausing Dekomori.")
                 with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
                     toml.dump(guildsDB, f)
                 globalLogger.debug(f"Wrote to guilds_db.toml.")
                 return
             # DM Checker
-            if guildsDB[guildId]["dm_on_kick"]:
+            if guildsDB[guildId]["dm_on_kick"] and not member.public_flags.spammer:
                 guildLogger.info(f"Sending Kick DM to {member.name}.")
                 dmChan = await member.create_dm()
-                await dmChan.send(content=guildsDB[guildId]["kick_dm_message"])
+                try:
+                    await dmChan.send(content=guildsDB[guildId]["kick_dm_message"])
+                except discord.errors.Forbidden:
+                    guildLogger.error(f"Couldn't send DM to {member.name}.")
             # Kick Loop
             while True:
                 try:
@@ -469,7 +489,7 @@ async def on_member_update(before, after):
                     guildLogger.error(f"Got an HTTPException while trying to kick {member.name}. Retrying...")
                 else:
                     guildLogger.info(f"Kicked {member.name}.")
-                    await logChanObj.send(f"Mjolnir Tornado! {member.mention} ({member.name}) had a bait role and was _deathly_ kicked away!")
+                    await logChanObj.send(kickMessage)
                     guildsDB[guildId]["kick_counter"] += 1
                     guildLogger.debug(f"Added 1 to Kick Counter.")
                     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
@@ -487,14 +507,14 @@ async def on_member_update(before, after):
                         await message.delete()
                     except discord.errors.Forbidden:
                         guildLogger.error(f"Missing permissions to delete {member.name}'s welcome message.")
-                        await logChanObj.send(f"I don't have the necessary permissions to delete their welcome message! Please check my permissions and try again.")
+                        await logChanObj.send(f"⚠️ I don't have the necessary permissions to delete their welcome message! Please check my permissions and try again.")
                         break
                     else:
                         wmCount += 1
             wmS = "s" if wmCount > 1 else ""
             if wmCount > 0:
                 guildLogger.info(f"Deleted {member.name}'s welcome message{wmS}.")
-                await logChanObj.send(f"I also deleted {wmCount} welcome message{wmS}, they're not _deathly_ welcome here!")
+                await logChanObj.send(f"**Welcome Message Deleted:** I also deleted {wmCount} welcome message{wmS}, they're not _deathly_ welcome here!")
     if memberdict in guildsDB[guildId]["currenteval"]:
         guildsDB[guildId]["currenteval"].remove(memberdict)
         guildLogger.debug(f"Removed {after.name} from currentEval.")
@@ -525,7 +545,7 @@ async def on_member_join(member):
     if guildsDB[guildId]["bait_roles"] == []:
         brCmdId = globalConfig['command_ids']["baitrole"]
         guildLogger.error(f"No bait roles set. Skipping check of {member.name}...")
-        await logChanObj.send(f"{member.mention} just joined, but no bait roles are set, so I can't really do anything...\nPlease set bait roles using `d!baitrole add [roles]`, or </baitrole:{brCmdId}>."+failPauseMsg)
+        await logChanObj.send(f"⚠️ {member.mention} just joined, but no bait roles are set, so I can't really do anything...\nPlease set bait roles using `d!baitrole add [roles]`, or </baitrole:{brCmdId}>."+failPauseMsg)
         guildsDB[guildId]["paused"] = True
         guildLogger.info(f"Pausing Dekomori ")
         with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
@@ -539,7 +559,7 @@ async def on_member_join(member):
     # Onboarding Enabled Check
     if not member.flags.started_onboarding:
         guildLogger.error(f"User {member.name} joined but no onboarding was detected. Skipping check of {member.name}...")
-        await logChanObj.send(f"{member.mention} just joined, but no onboarding was detected! This means that onboarding is not set up on the server.\nIf onboarding is not set up (and users don't get prompted to get roles) then there's no point in me checking for bait roles...\nPlease enable onboarding in the server settings so I can get to _deathly_ work!."+failPauseMsg)
+        await logChanObj.send(f"⚠️ {member.mention} just joined, but no onboarding was detected! This means that onboarding is not set up on the server.\nIf onboarding is not set up (and users don't get prompted to get roles) then there's no point in me checking for bait roles...\nPlease enable onboarding in the server settings so I can get to _deathly_ work!."+failPauseMsg)
         guildsDB[guildId]["paused"] = True
         guildLogger.info(f"Pausing Dekomori.")
         with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
@@ -812,7 +832,7 @@ async def remove(ctx, role):
 async def toggle(ctx):
     """Toggle various settings for Dekomori. You can check their status with d!config."""
     guildLogger = logging.getLogger(str(ctx.guild.id))
-    await ctx.send("Hey, what exactly do you want me to toggle? There's `dm`, `delwm`, `ban`, `rejoinchecker`, and `kickonstall`!")
+    await ctx.send("Hey, what exactly do you want me to toggle? There's `dm`, `delwm`, `ban`, `rejoinchecker`, `kickonstall`, and `spammers`!")
     guildLogger.error(f"{ctx.author.name} didn't specify any arguments for toggle.")
 
 @toggle.command(aliases=["dmuser"], brief="Toggle DMs on detection of bait roles.")
@@ -833,10 +853,10 @@ async def dm(ctx, action:Literal["kick", "ban", "stall"]):
             toml.dump(guildsDB, f)
         globalLogger.debug(f"Wrote to guilds_db.toml.")
         if guildsDB[guildId]["dm_on_kick"]:
-            await ctx.send("I'll have some _deathly_ mercy on my enemies and DM them before I kick them!")
+            await ctx.send("**DM On Kick Turned __On__:** I'll have some _deathly_ mercy on my enemies and DM them before I kick them!")
             guildLogger.info(f"{ctx.author.name} turned on DM on Kick.")
         else:
-            await ctx.send("No more DMs for anyone! I'll kick them to **DEATH**!")
+            await ctx.send("**DM On Kick Turned __Off__:** No more DMs for anyone! I'll kick them to **DEATH**!")
             guildLogger.info(f"{ctx.author.name} turned off DM on Kick.")
     elif action == "ban":
         guildsDB[guildId]["dm_on_ban"] = not guildsDB[guildId]["dm_on_ban"]
@@ -844,10 +864,10 @@ async def dm(ctx, action:Literal["kick", "ban", "stall"]):
             toml.dump(guildsDB, f)
         globalLogger.debug(f"Wrote to guilds_db.toml.")
         if guildsDB[guildId]["dm_on_ban"]:
-            await ctx.send("I'll spare some _deathly_ words for my enemies before they face **DEATH**!")
+            await ctx.send("**DM On Ban Turned __On__:** I'll spare some _deathly_ words for my enemies before they face **DEATH**!")
             guildLogger.info(f"{ctx.author.name} turned on DM on Ban.")
         else:
-            await ctx.send("I have no words to spare, only **DEATH**!")
+            await ctx.send("**DM On Ban Turned __Off__:** I have no words to spare, only **DEATH**!")
             guildLogger.info(f"{ctx.author.name} turned off DM on Ban.")
     elif action == "stall":
         guildsDB[guildId]["dm_on_stallkick"] = not guildsDB[guildId]["dm_on_stallkick"]
@@ -855,10 +875,10 @@ async def dm(ctx, action:Literal["kick", "ban", "stall"]):
             toml.dump(guildsDB, f)
         globalLogger.debug(f"Wrote to guilds_db.toml.")
         if guildsDB[guildId]["dm_on_stallkick"]:
-            await ctx.send("I'll have some _deathly_ mercy on those who stall and DM them before I kick them!")
+            await ctx.send("**DM On Stall Kick Turned __On__:** I'll have some _deathly_ mercy on those who stall and DM them before I kick them!")
             guildLogger.info(f"{ctx.author.name} turned on DM on Stall Kick.")
         else:
-            await ctx.send("No more DMs for stallers! I'll kick them to **DEATH**!")
+            await ctx.send("N**DM On Kick Turned __Off__:** o more DMs for stallers! I'll kick them to **DEATH**!")
             guildLogger.info(f"{ctx.author.name} turned off DM on Stall Kick.")
 
 @toggle.command(aliases=["wm", "wmdel", "welcomemessage", "deletewelcomemessage"], brief="Toggle deletion of welcome messages.")
@@ -874,10 +894,10 @@ async def delwm(ctx):
     globalLogger.debug(f"Wrote to guilds_db.toml.")
     if guildsDB[guildId]["delete_welcome_message"]:
         guildLogger.info(f"{ctx.author.name} turned on Welcome Message Deletion.")
-        await ctx.send("I'll delete the welcome messages for users who took the bait!")
+        await ctx.send("**Delete Welcome Messages Turned __On__:** I'll delete the welcome messages for users who took the bait!")
     else:
         guildLogger.info(f"{ctx.author.name} turned off Welcome Message Deletion.")
-        await ctx.send("I'll let the welcome messages be!")
+        await ctx.send("**Delete Welcome Messages Turned __Off__:** I'll let the welcome messages be!")
 
 @toggle.command(aliases=["ban", "kick"], brief="Toggle between banning and kicking users with bait roles.")
 @commands.has_permissions(manage_roles=True)
@@ -888,15 +908,15 @@ async def action(ctx):
     guildId = str(ctx.guild.id)
     guildsDB[guildId]["ban"] = not guildsDB[guildId]["ban"]
     if guildsDB[guildId]["ban"]:
-        await ctx.send("They shall be banned by **DEATH** itself!")
+        await ctx.send("**Action Set To __Banning__:** They shall be banned by **DEATH** itself!")
         guildLogger.info(f"{ctx.author.name} turned on Banning.")
         if guildsDB[guildId]["rejoin_checker"]["enabled"]:
             guildsDB[guildId]["rejoin_checker"]["enabled"] = False
             guildLogger.warning(f"As banning has been turned on, the rejoin checker has been disabled.")
-            await ctx.send("I've also turned off the Rejoin Checker, as it only works with kicks!")
+            await ctx.send("**Rejoin Checker Turned __Off__:** I've also turned off the Rejoin Checker, as it only works with kicks!")
     else:
         guildLogger.info(f"{ctx.author.name} turned off Banning.")
-        await ctx.send("I'll spare them from **DEATH** and just kick them away!")
+        await ctx.send("**Action Set To __Kicking__:** I'll spare them from **DEATH** and just kick them away!")
     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
         toml.dump(guildsDB, f)
     globalLogger.debug(f"Wrote to guilds_db.toml.")
@@ -914,10 +934,28 @@ async def kickonstall(ctx):
     globalLogger.debug(f"Wrote to guilds_db.toml.")
     if guildsDB[guildId]["kick_on_stall"]:
         guildLogger.info(f"{ctx.author.name} turned on Kick on Stall.")
-        await ctx.send("I'll kick users who stall in the onboarding process!")
+        await ctx.send("**DM On Stall Kick Turned __On__:** I'll kick users who stall in the onboarding process!")
     else:
         guildLogger.info(f"{ctx.author.name} turned off Kick on Stall.")
-        await ctx.send("I'll just leave users who stall be, then!")
+        await ctx.send("**DM On Stall Kick Turned __Off__:** I'll just leave users who stall be, then!")
+
+@toggle.command(aliases=["sp"], brief="Toggle the spammer checker.")
+@commands.has_permissions(manage_roles=True)
+async def spammers(ctx):
+    """Toggle the spammer checker. If enabled, Dekomori will take action against users who are flagged by Discord as spammers. You can check its status with d!config.
+    """
+    guildLogger = logging.getLogger(str(ctx.guild.id))
+    guildId = str(ctx.guild.id)
+    guildsDB[guildId]["spammer_check"] = not guildsDB[guildId]["spammer_check"]
+    with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
+        toml.dump(guildsDB, f)
+    globalLogger.debug(f"Wrote to guilds_db.toml.")
+    if guildsDB[guildId]["spammer_check"]:
+        guildLogger.info(f"{ctx.author.name} turned on Spammer Checker.")
+        await ctx.send("**Flagged Spammer Kick Turned __On__:** Got it! I'll keep an eye out for _deathly_ spammers!")
+    else:
+        guildLogger.info(f"{ctx.author.name} turned off Spammer Checker.")
+        await ctx.send("**Flagged Spammer Kick Turned __Off__:** Okay, no more _deathly_ spammer checks!")
 
 @toggle.command(aliases=["rc", "rejoin", "rjc"], brief="Toggle the rejoin checker.")
 @commands.has_permissions(manage_roles=True)
@@ -943,10 +981,10 @@ async def rejoinchecker(ctx):
     globalLogger.debug(f"Wrote to guilds_db.toml.")
     if guildsDB[guildId]["rejoin_checker"]["enabled"]:
         guildLogger.info(f"{ctx.author.name} turned on Rejoin Checker.")
-        await ctx.send("I'll notify the role when someone tries to rejoin the server multiple times in a row!")
+        await ctx.send("**Rejoin Checker Turned __On__:** I'll notify the role when someone tries to rejoin the server multiple times in a row!")
     else:
         guildLogger.info(f"{ctx.author.name} turned off Rejoin Checker.")
-        await ctx.send("No more notifications, only **DEATH**!")
+        await ctx.send("**Rejoin Checker Turned __Off__:** No more notifications, only **DEATH**!")
 
 @toggle.command(aliases=["rjckick", "rjck"], brief="Toggle the rejoin checker kicking users.")
 @commands.has_permissions(manage_roles=True)
@@ -961,10 +999,10 @@ async def rejoincheckerkick(ctx):
     globalLogger.debug(f"Wrote to guilds_db.toml.")
     if guildsDB[guildId]["rejoin_checker"]["kickuser"]:
         guildLogger.info(f"{ctx.author.name} turned on Rejoin Checker Kick.")
-        await ctx.send("I'll kick users who try to rejoin the server multiple times in a row!")
+        await ctx.send("**Rejoin Checker Kick Turned __On__:** I'll kick users who try to rejoin the server multiple times in a row!")
     else:
         guildLogger.info(f"{ctx.author.name} turned off Rejoin Checker Kick.")
-        await ctx.send("I'll spare some _deathly_ mercy and just ping the role, but the user will stay!")
+        await ctx.send("**Rejoin Checker Kick Turned __Off__:** I'll spare some _deathly_ mercy and just ping the role, but the user will stay!")
 
 # Set Hybrid Group -----------------------------------------------------
 @client.hybrid_group(brief="Set various configurations for Dekomori.")
@@ -998,7 +1036,7 @@ async def logchannel(ctx, channel: discord.TextChannel):
     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
         toml.dump(guildsDB, f)
     globalLogger.debug(f"Wrote to guilds_db.toml.")
-    await ctx.send(f"I'll write the names of slain enemies in {channel.mention}!")
+    await ctx.send(f"**Log Channel Set:** I'll write the names of slain enemies in {channel.mention}!")
 
 @set.command(aliases=["st", "stalltimeout", "jointimer", "jointimeout"], brief="Set the stall timer for Dekomori.")
 @commands.has_permissions(manage_roles=True)
@@ -1024,7 +1062,7 @@ async def stalltimer(ctx, time: int):
     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
         toml.dump(guildsDB, f)
     globalLogger.debug(f"Wrote to guilds_db.toml.")
-    await ctx.send(f"I'll give users {parsedDuration} to complete the onboarding process before kicking them!")
+    await ctx.send(f"**Stall Timer Set:** I'll give users {parsedDuration} to complete the onboarding process before kicking them!")
 
 @set.command(aliases=["setdmmsg", "dmmessage"], brief="Set the DM message for Dekomori's actions.")
 @commands.has_permissions(manage_roles=True)
@@ -1046,21 +1084,21 @@ async def dmmsg(ctx, action:Literal["kick", "ban", "stall"], *, message: str):
         with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
             toml.dump(guildsDB, f)
         globalLogger.debug(f"Wrote to guilds_db.toml.")
-        await ctx.send("Roger! I'll tell this to those I _deathly_ kick away!")
+        await ctx.send("**Kick DM Message Set:** Roger! I'll tell this to those I _deathly_ kick away!")
     elif action == "ban":
         guildsDB[guildId]["ban_dm_message"] = message
         guildLogger.info(f"{ctx.author.name} set ban dm msg to \"{message}\".")
         with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
             toml.dump(guildsDB, f)
         globalLogger.debug(f"Wrote to guilds_db.toml.")
-        await ctx.send("Roger! I'll tell this to the victims of my Mjolnir Hammer!!")
+        await ctx.send("**Ban DM Message Set:** Roger! I'll tell this to the victims of my Mjolnir Hammer!!")
     elif action == "stall":
         guildsDB[guildId]["stall_dm_message"] = message
         guildLogger.info(f"{ctx.author.name} set stall dm msg to \"{message}\".")
         with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
             toml.dump(guildsDB, f)
         globalLogger.debug(f"Wrote to guilds_db.toml.")
-        await ctx.send("Roger! I'll tell this to those who get kicked for stalling in the onboarding process!")
+        await ctx.send("**Stall DM Message Set:** Roger! I'll tell this to those who get kicked for stalling in the onboarding process!")
 
 # Rejoin Checker Hybrid Group -----------------------------------------------------
 @client.hybrid_group(aliases=["rc", "rjck", "rjc"], brief="Configure the rejoin checker.")
@@ -1091,7 +1129,7 @@ async def pingrole(ctx, role: discord.Role):
     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
         toml.dump(guildsDB, f)
     globalLogger.debug(f"Wrote to guilds_db.toml.")
-    await ctx.send(f"Roger! I'll ping {role.name} when someone tries to rejoin too many times!")
+    await ctx.send(f"**Rejoin Checker Role Set:** Roger! I'll ping {role.name} when someone tries to rejoin too many times!")
 
 @rejoinchecker.command(aliases=["sm", "setmaxcount", "max"], brief="Set the maximum number of times a user can rejoin before a role is alerted.")
 @commands.has_permissions(manage_roles=True)
@@ -1110,7 +1148,7 @@ async def setmax(ctx, count: int):
     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
         toml.dump(guildsDB, f)
     globalLogger.debug(f"Wrote to guilds_db.toml.")
-    await ctx.send(f"Got it! I'll take action after {count} rejoins!")
+    await ctx.send(f"**Rejoin Checker Count Set:** Got it! I'll take action after {count} rejoins!")
 
 # Non-grouped Hybrid Commands -----------------------------------------------------
 @client.hybrid_command(aliases=["configure","cfg"], brief="Show the current configuration.")
@@ -1176,6 +1214,7 @@ async def config(ctx, mode:Literal["brief", "complete"]):
     if not complete:
         kickOnStall = f"Yes - {stallTimer} Timeout" if guildsDB[guildId]["kick_on_stall"] else "No"
     embed.add_field(name="Kick on Stall", value=kickOnStall, inline=False)
+    embed.add_field(name="Kick Users Flagged as Spammers", value="Yes" if guildsDB[guildId]["spammer_check"] else "No", inline=False)
     if not complete and not guildsDB[guildId]["rejoin_checker"]["enabled"]:
         rejoinChecker = f"**Enabled**: {rjcEnabled}"
     embed.add_field(name="Rejoin Checker", value=rejoinChecker, inline=False)
@@ -1205,7 +1244,7 @@ async def pause(ctx):
         toml.dump(guildsDB, f)
     globalLogger.debug(f"Wrote to guilds_db.toml.")
     resumeId = globalConfig["command_ids"]["resume"]
-    await ctx.send(f"Oh? Okay, I'll stop for now...\nWhen you need me again, type `d!resume` or do </resume:{resumeId}>!")
+    await ctx.send(f"**PAUSED:** Oh? Okay, I'll stop for now...\nWhen you need me again, type `d!resume` or do </resume:{resumeId}>!")
 
 @client.hybrid_command(aliases=["start", "awaken"], brief="Resume Dekomori's actions.")
 @app_commands.default_permissions(manage_roles = True)
@@ -1234,7 +1273,7 @@ async def resume(ctx):
     with open('./config/guilds_db.toml', 'w', encoding='utf-8') as f:
         toml.dump(guildsDB, f)
     globalLogger.debug(f"Wrote to guilds_db.toml.")
-    await ctx.send("I'm _deathly_ ready to serve!")
+    await ctx.send("**RESUMED:** I'm _deathly_ ready to serve!")
 
 @client.hybrid_command(aliases=["rescter", "resc"], brief="Reset the kick or ban counter.")
 @app_commands.default_permissions(manage_roles = True)
@@ -1333,7 +1372,8 @@ async def fight(ctx, user: discord.Member):
     Parameters
     ----------
     user : discord.Member
-        The user to fight with."""
+        The user to fight with.
+    """
     guildLogger = logging.getLogger(str(ctx.guild.id))
     if user == ctx.author:
         await ctx.send("You can't fight yourself, silly!")
@@ -1355,6 +1395,13 @@ async def chuuni(ctx):
     message = message.replace('\\n', '\n')
     await ctx.send(message)
     guildLogger.info(f"{ctx.author.name} asked Dekomori for some enlightening words.")
+
+@client.hybrid_command(aliases=["desu"], brief="DEATH!")
+async def death(ctx):
+    """Death!"""
+    guildLogger = logging.getLogger(str(ctx.guild.id))
+    guildLogger.info(f"{ctx.author.name} is feeling deathly.")
+    await ctx.send("DEATH!")
 
 ### Owner-Exclusive Debug Commands ###
 
@@ -1418,8 +1465,11 @@ async def updaterp(ctx, status):
     status : str
         The status to be set.
     """
+    globalConfig["rp_message"] = status
     await client.change_presence(activity=discord.CustomActivity(name=status))
     globalLogger.info(f"OWNER COMMAND - Updated RichPresence to {status}")
+    with open('./config/config.toml', 'w') as f:
+        toml.dump(globalConfig, f)
     await ctx.send("Updated, master!")
 
 @client.command(hidden=True)
@@ -1585,7 +1635,7 @@ async def addline(ctx, category:Literal["fight", "chuuni"], *add):
 @client.command(aliases=["gbann", "globalanc"], hidden=True)
 @commands.is_owner()
 async def globalannounce(ctx, *, msg):
-    """Announces a message globally, and sends it to all the log channels in every server Dekomori is in. Takes a string as argument.
+    """Announces a message globally, and sends it to all the log channels in every server Dekomori is in (that have been set up). Takes a string as argument.
 
     Parameters
     ----------
@@ -1593,8 +1643,10 @@ async def globalannounce(ctx, *, msg):
         The message to be announced.
     """
     globalLogger.info(f"OWNER COMMAND - Global Announcement: {msg}")
+    successGuilds = []
     for guild in client.guilds:
         if guildsDB[str(guild.id)]["log_channel_id"] != 0:
+            successGuilds.append(guild.name)
             guildId = str(guild.id)
             logChanObj = discord.utils.get(guild.text_channels, id=guildsDB[guildId]["log_channel_id"])
             globalLogger.debug(f"Sending announcement to {guild.name}.")
@@ -1602,7 +1654,7 @@ async def globalannounce(ctx, *, msg):
                 await logChanObj.send(msg)
             except discord.Forbidden:
                 globalLogger.error(f"Couldn't send announcement to {guild.name} because of a Forbidden error.")
-    await ctx.send("Announcement sent to the following servers, master!\n" + "\n".join([guild.name for guild in client.guilds]))
+    await ctx.send("Announcement sent to the following servers, master!\n"+", ".join(successGuilds))
 
 ################# EXECUTE! #################
 client.run(globalConfig["token"])
