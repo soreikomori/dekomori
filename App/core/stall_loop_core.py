@@ -28,25 +28,25 @@ async def stall_loop():
     """
     while True:
         wlGuilds = gdb.get_guilds_with_populated_watchlists()
-        for guild in wlGuilds:
-            guildId = int(guild["guild_id"])
+        for guildentry in wlGuilds:
+            guildId = int(guildentry["guild_id"])
             guildLogger = logger.get_guild_logger(guildId)
-            guildObj = discord.utils.get(client.guilds, id=guildId)
-            guildLogger.debug(f"Stall Loop - Checking guild {guildObj.name} ({guildId})")
+            guild = discord.utils.get(client.guilds, id=guildId)
+            guildLogger.debug(f"Stall Loop - Checking guild {guild.name} ({guildId})")
             watchlist = gdb.get_value(guildId, "watchlist")
             guildTimeout = gdb.get_value(guildId, "stall_timeout")
-            trueWatchlist = wl.purge_userpairs(watchlist, guildObj)
+            trueWatchlist = wl.purge_userpairs(watchlist, guild)
             for userpair in trueWatchlist:
                 userpairId = wl.get_userpair_id(userpair)
                 timeElapsed = datetime.datetime.now() - wl.get_userpair_time(userpair)
                 if timeElapsed >= datetime.timedelta(seconds=guildTimeout):
-                    memberObj = discord.utils.get(guildObj.members, id=userpairId)
-                    guildLogger.info(f"Stall Loop - User {memberObj.name} ({str(userpairId)}) has reached the timeout limit.")
+                    member = discord.utils.get(guild.members, id=userpairId)
+                    guildLogger.info(f"Stall Loop - User {member.name} ({str(userpairId)}) has reached the timeout limit.")
                     if is_kos_active(guildId):
-                        actions.kick_member(memberObj, "KOS")
-                        dms.kick_on_stall_dm(memberObj, guildId)
+                        actions.kick_member(member, "KOS")
+                        dms.kick_on_stall_dm(member, guildId)
                     else:
-                        lcsend.stall_no_kos(guildObj, memberObj)
+                        lcsend.stall_no_kos(guild, member)
                     # TODO rejoinchecker
                     wl.remove_userpair(userpair)
                     guildLogger.debug(f"Stall Loop - Removed userpair {userpairId} from watchlist.")

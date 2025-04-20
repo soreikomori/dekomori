@@ -27,7 +27,7 @@ def new_userpair(userId, time=datetime.datetime.now()):
         "time": time
     }
 
-def user_exists(wl_userpair, guildObj):
+def user_exists(wl_userpair, guild):
     """
     Checks if a user in the watchlist userpair exists in the guild.
     
@@ -35,7 +35,7 @@ def user_exists(wl_userpair, guildObj):
     ----------
     wl_userpair : wl_userpair
         The watchlist userpair to check.
-    guildObj : discord.Guild
+    guild : discord.Guild
         The guild object to check against.
         
     Returns
@@ -43,7 +43,7 @@ def user_exists(wl_userpair, guildObj):
     bool
         True if the watchlist userpair is valid, False otherwise.
     """
-    return discord.utils.get(guildObj.members, id=wl_userpair["id"]) is not None
+    return discord.utils.get(guild.members, id=wl_userpair["id"]) is not None
 
 def get_user_id(wl_userpair):
     """
