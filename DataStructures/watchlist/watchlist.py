@@ -121,6 +121,24 @@ def is_present(memberId, watchlist):
 
 # Utility Functions
 
+def remove_user(memberId, watchlist):
+    """
+    Removes a user from the watchlist.
+
+    Parameters
+    ----------
+    memberId : int
+        The member ID to remove.
+    watchlist : watchlist
+        The watchlist to remove the user from.
+
+    Returns
+    -------
+    watchlist
+        The updated watchlist.
+    """
+    return [userpair for userpair in watchlist if wlup.get_user_id(userpair) != memberId]
+
 def purge_userpairs(watchlist, guild):
     """
     Purges all userpairs from the watchlist that are not valid in the guild.
