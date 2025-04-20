@@ -32,6 +32,7 @@ async def setup_rich_presence(client):
     """
     rpMessage = config.get_config("rp_message")
     await client.change_presence(activity=discord.CustomActivity(name=rpMessage))
+    globalLogger.info(f"Rich Presence set to: {rpMessage}")
 
 def initialize_all_guild_loggers(client_guilds):
     """
