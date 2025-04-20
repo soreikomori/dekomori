@@ -24,6 +24,17 @@ def add_guild(guild_id: str, guild_name: str):
     else:
         raise ValueError(f"Guild with ID {guild_id} already exists in the database.")
 
+def remove_guild(guild_id: str):
+    """
+    Removes a guild from the database.
+
+    Parameters
+    ----------
+    guild_id : str
+        The ID of the guild.
+    """
+    db.remove(Guild.id == guild_id)
+
 def get_guild_config(guild_id: str):
     """
     Retrieves the configuration for a specific guild.
