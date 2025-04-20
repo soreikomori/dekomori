@@ -21,7 +21,7 @@ async def setup_rich_presence(client):
     rpMessage = config.get_config("rp_message")
     await client.change_presence(activity=discord.CustomActivity(name=rpMessage))
 
-def initialize_loggers(client_guilds):
+def initialize_all_guild_loggers(client_guilds):
     """
     Initializes the loggers for each guild.
 
@@ -31,8 +31,18 @@ def initialize_loggers(client_guilds):
         List of guilds the client is in.
     """
     for guild in client_guilds:
-        globalLogger.debug(f"Initializing logger for guild: {guild.name} ({guild.id})")
-        guildId = str(guild.id)
-        guildLogLevel = gdb.get_value(guildId, "log_level")
-        guildLogger = logger.setup_guild_logger(guildId, guildLogLevel)
-        guildLogger.info(f" - - - Dekomori {VERSION} Reconnected! - - - ")
+        initialize_logger(str(guild.id))
+
+def initialize_logger(guildId):
+    """
+    Initializes the logger for a specific guild.
+
+    Parameters
+    ----------
+    guildId : str
+        The ID of the guild.
+    """
+    globalLogger.debug(f"Initializing logger for guild: {guildId}")
+    guildLogLevel = gdb.get_value(guildId, "log_level")
+    guildLogger = logger.setup_guild_logger(guildId, guildLogLevel)
+    guildLogger.info(f" - - - Dekomori {VERSION} Reconnected! - - - ")
