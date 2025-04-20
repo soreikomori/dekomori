@@ -48,7 +48,7 @@ async def stall_loop():
                     else:
                         lcsend.stall_no_kos(guild, member)
                     # TODO rejoinchecker
-                    wl.remove_userpair(userpair)
+                    gdb.remove_user_from_watchlist(guild, userpairId)
                     guildLogger.debug(f"Stall Loop - Removed userpair {userpairId} from watchlist.")
         await asyncio.sleep(60)
 
