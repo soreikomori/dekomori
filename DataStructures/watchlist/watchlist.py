@@ -101,14 +101,14 @@ def size(watchlist):
     """
     return len(watchlist)
 
-def is_present(member, watchlist):
+def is_present(memberId, watchlist):
     """
     Checks if a user is in the watchlist.
 
     Parameters
     ----------
-    member : discord.Member
-        The member to check.
+    memberId : int
+        The member ID to check.
     watchlist : watchlist
         The watchlist to check against.
 
@@ -117,7 +117,7 @@ def is_present(member, watchlist):
     bool
         True if the user is in the watchlist, False otherwise.
     """
-    return any(wlup.get_user_id(userpair) == member.id for userpair in watchlist)
+    return any(wlup.get_user_id(userpair) == memberId for userpair in watchlist)
 
 # Utility Functions
 
