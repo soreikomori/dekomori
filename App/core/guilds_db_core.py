@@ -318,4 +318,22 @@ def add_bait_role(guild: discord.Guild, roleId: int):
     else:
         raise ValueError(f"Role with ID {roleId} is already in the bait roles list.")
 
+def get_all_bait_roles(guild: discord.Guild):
+    """
+    Retrieves all bait roles for a specific guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to retrieve bait roles from.
+
+    Returns
+    -------
+    list of int
+        A list of role IDs representing all bait roles.
+    """
+    guildId = str(guild.id)
+    bait_roles = get_value(guildId, "bait_roles")
+    return bait_roles if bait_roles else []
+
 # endregion # Bait Roles Related
