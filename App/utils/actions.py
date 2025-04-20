@@ -47,8 +47,8 @@ def get_kick_reason(type):
 
     Parameters
     ----------
-    type : Literal["KOS", "Bait"]
-        The type of kick. "KOS" for kick on stall, "Bait" for bait kick.
+    type : Literal["KOS", "Bait", "Spamflag"]
+        The type of kick. "KOS" for kick on stall, "Bait" for bait kick, "Spamflag" for spam flag kick.
 
     Returns
     -------
@@ -58,4 +58,6 @@ def get_kick_reason(type):
     if type == "KOS":
         return "User didn't complete onboarding in time."
     elif type == "Bait":
-        return # TODO implement bait kick reason
+        return "User had a bait role."
+    elif type == "Spamflag":
+        return "User is flagged as a spammer by Discord."
