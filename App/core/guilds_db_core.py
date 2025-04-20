@@ -318,6 +318,25 @@ def add_bait_role(guild: discord.Guild, roleId: int):
         update_value(guildId, "bait_roles", bait_roles)
     else:
         raise ex.RoleAlreadyInListError(f"Role with ID {roleId} is already in the bait roles list.")
+    
+def remove_bait_role(guild: discord.Guild, roleId: int):
+    """
+    Removes a bait role from the guild's bait roles list.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to retrieve bait roles from.
+    roleId : int
+        The ID of the role to remove from the bait roles list.
+    """
+    guildId = str(guild.id)
+    bait_roles = get_value(guildId, "bait_roles")
+    if roleId in bait_roles:
+        bait_roles.remove(roleId)
+        update_value(guildId, "bait_roles", bait_roles)
+    else:
+        raise ex.RoleAlreadyInListError(f"Role with ID {roleId} is not in the bait roles list.")
 
 def get_all_bait_roles(guild: discord.Guild):
     """
