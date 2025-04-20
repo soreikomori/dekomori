@@ -282,21 +282,21 @@ def dm_on_kos(guildId: int):
 # endregion # DM Related
 # region # Bait Roles Related
 
-def get_bait_roles(guildId: int):
+def get_bait_roles(guild: discord.Guild):
     """
     Retrieves the bait roles for a specific guild.
 
     Parameters
     ----------
-    guildId : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object to retrieve bait roles from.
 
     Returns
     -------
     list of int
         A list of role IDs representing the bait roles.
     """
-    guildId = str(guildId)
+    guildId = str(guild.id)
     return get_value(guildId, "bait_roles")
 
 # endregion # Bait Roles Related
