@@ -7,7 +7,7 @@ from App.utils.startup import globalLogger
 from App.utils.constants import VERSION
 
 import asyncio
-
+from App.core import log_channel_sender_core as lcsend
 from App.utils import logger as logger
 from App.utils import counters as counters
 from App.utils import checks as checks
@@ -69,6 +69,40 @@ async def ban_user(guild, member, type):
             guildLogger.error(f"Got an HTTPException while trying to ban {member.name}. Retrying...")
             guildLogger.debug(f"HTTPException: {e}")
             await asyncio.sleep(5)
+
+@checks.can_delete_welcome_messages()
+async def delete_welcome_messages(guild, member):
+    """
+    Deletes the welcome messages in the system channel.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object from which to delete the welcome messages.
+    member : discord.Member
+        The member object representing the user whose welcome messages to delete.
+    """
+    guildLogger = logger.get_guild_logger(guild.id)
+    guildLogger.debug(f"Attempting to delete welcome messages for {member.name} ({member.id}).")
+    if guild.system_channel:
+        wmCount = 0
+        async for message in guild.system_channel.history(limit=10):
+            if message.author == member:
+                while True:
+                    try:
+                        await message.delete()
+                        wmCount += 1
+                        break
+                    except discord.HTTPException as e:
+                        guildLogger.error(f"Got an HTTPException while trying to delete a welcome message from {member.name}.")
+                        guildLogger.debug(f"HTTPException: {e}")
+                        await asyncio.sleep(5)
+        if wmCount > 0:
+            s = "s" if wmCount > 1 else ""
+            guildLogger.info(f"Deleted {wmCount} welcome message{s} from {member.name} ({member.id}).")
+            await lcsend.welcome_message_deleted(guild.id, member, wmCount)
+
+# Utilities
 
 def get_reason(type):
     """
