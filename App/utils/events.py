@@ -19,18 +19,20 @@ async def on_ready():
     print("Ready!")
     stall_loop.initialize_stall_loop()
 
-
-"""
 @client.event
 async def on_guild_join(guild):
-    guildId = str(guild.id)
-    globalLogger.info(f"Joined {guild.name} ({guildId}). Adding to TinyDB.")
-
-    add_guild(guildId, guild.name)
+    """
+    Event handler for when the bot joins a new guild.
     
-    guildLogger = logging.getLogger(guildId)
-    setup_logger(guildLogger, guild)
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object representing the guild the bot has joined.
     
+    """
+    globalLogger.info(f"Joined {guild.name} ({guild.id}).")
+    gdb.add_guild(guild.id, guild.name) # Database addition
+    guildLogger = startup.initialize_guild_logger(guild.id)
+    # Log the event of joining the guild
     guildLogger.info(f" - - - Dekomori has joined {guild.name}! - - - ")
-    guildLogger.info(f"First Setup - Dekomori {version}")
-"""
+    guildLogger.info(f"First Setup - Dekomori {VERSION}")
