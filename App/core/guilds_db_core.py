@@ -1,57 +1,12 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
 from tinydb import TinyDB, Query
-from DataStructures.List import watchlist as wl
+from DataStructures.watchlist import watchlist as wl
+from DataStructures.guildentry import guildentry as ge
 
 DB_PATH = "env/guilds_db.json"
 db = TinyDB(DB_PATH)
 Guild = Query()
-
-def default_guild_config(guild_id: str, guild_name: str):
-    """
-    Creates a default configuration for a new guild.
-    
-    Parameters
-    ----------
-    guild_id : str
-        The ID of the guild.
-    guild_name : str
-        The name of the guild.
-        
-    Returns
-    -------
-    dict
-        A dictionary containing the default configuration for the guild."""
-    return {
-        "id": guild_id,
-        "paused": True,
-        "bait_roles": [],
-        "watchlist": wl.new_watchlist(),
-        "dm_on_kick": False,
-        "dm_on_ban": False,
-        "dm_on_stallkick": False,
-        "spammer_check": False,
-        "rejoin_checker": {
-            "enabled": False,
-            "userId": 0,
-            "joinCount": 0,
-            "maxJoinCount": 0,
-            "pingRoleId": 0,
-            "kickuser": True
-        },
-        "ban": False,
-        "log_channel_id": 0,
-        "kick_on_stall": False,
-        "stall_timeout": 300,
-        "kick_dm_message": f"You have been kicked from {guild_name} for suspicious activity.",
-        "ban_dm_message": f"You have been banned from {guild_name} for suspicious activity.",
-        "stall_dm_message": f"You have been kicked from {guild_name} because you didn't complete onboarding in a while. If you join back, please complete onboarding.",
-        "ban_counter": 0,
-        "kick_counter": 0,
-        "delete_welcome_message": False,
-        "welcome_channel_id": 0,
-        "debug_logging": False
-    }
 
 def add_guild(guild_id: str, guild_name: str):
     """
@@ -65,7 +20,7 @@ def add_guild(guild_id: str, guild_name: str):
         The name of the guild.
     """
     if not db.contains(Guild.id == guild_id):
-        db.insert(default_guild_config(guild_id, guild_name))
+        db.insert(ge.new_guildentry(guild_id, guild_name))
         db.save()
     else:
         raise ValueError(f"Guild with ID {guild_id} already exists in the database.")
