@@ -28,7 +28,7 @@ async def kick_user(guild, member, type):
     """
     guildLogger = logger.get_guild_logger(guild.id)
     guildLogger.debug(f"Attempting to kick {member.name} ({member.id}).")
-    reason = get_kick_reason(type)
+    reason = get_reason(type)
     kicked = False
     while not kicked:
         try:
@@ -41,7 +41,7 @@ async def kick_user(guild, member, type):
             guildLogger.debug(f"HTTPException: {e}")
             await asyncio.sleep(5)
 
-def get_kick_reason(type):
+def get_reason(type):
     """
     Gets the kick reason based on the type of kick. This reason will be logged in the guild's audit log.
 
