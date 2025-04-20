@@ -122,3 +122,19 @@ def purge_pairs(watchlist, guildObj):
     """
     wlPurged = [pair for pair in watchlist if wlp.user_exists(pair, guildObj)]
     return wlPurged
+
+def get_userpair_id(pair):
+    """
+    Gets the user ID from the watchlist pair.
+
+    Parameters
+    ----------
+    pair : watchlist_pair
+        The watchlist pair to get the user ID from.
+
+    Returns
+    -------
+    int
+        The user ID from the watchlist pair.
+    """
+    return wlp.get_user_id(pair)
