@@ -67,3 +67,34 @@ def can_message_log_channel(guild):
             return await func(*args, **kwargs)
         return wrapper
     return decorator
+
+def can_delete_messages(guild, channel):
+    """
+    Checks if the bot can delete messages in a channel.
+    It assumes that the first argument is the guild object and the second argument is the channel object.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object.
+    channel : discord.TextChannel
+        The channel object.
+
+    Returns
+    -------
+    function
+        The decorator function.
+    """
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            guild = args[0]
+            channel = args[1]
+            if not channel.permissions_for(guild.me).manage_messages:
+                guildLogger = logger.get_guild_logger(guild.id)
+                guildLogger.error(f"Dekomori cannot delete messages in the {channel.name} channel.")
+                await lcsend.welcome_message_error(guild.id, "manage_messages")
+                raise PermissionError("Dekomori lacks 'manage_messages' permission in the channel.")
+            return await func(*args, **kwargs)
+        return wrapper
+    return decorator
