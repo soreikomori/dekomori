@@ -138,3 +138,19 @@ def get_userpair_id(userpair):
         The user ID from the watchlist userpair.
     """
     return wlup.get_user_id(userpair)
+
+def get_userpair_time(userpair):
+    """
+    Gets the time when a user was added to the watchlist.
+
+    Parameters
+    ----------
+    userpair : watchlist_useruserpair
+        The watchlist userpair to get the time from.
+
+    Returns
+    -------
+    datetime.datetime
+        The time when the user was added to the watchlist.
+    """
+    return wlup.get_user_time(userpair)
