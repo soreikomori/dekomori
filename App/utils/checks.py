@@ -68,17 +68,15 @@ def can_message_log_channel(guild):
         return wrapper
     return decorator
 
-def can_delete_messages(guild, channel):
+def can_delete_welcome_messages(guild):
     """
-    Checks if the bot can delete messages in a channel.
-    It assumes that the first argument is the guild object and the second argument is the channel object.
+    Checks if the bot can delete the welcome messages in the system channel.
+    It assumes that the first argument is the guild object.
 
     Parameters
     ----------
     guild : discord.Guild
         The guild object.
-    channel : discord.TextChannel
-        The channel object.
 
     Returns
     -------
@@ -89,7 +87,7 @@ def can_delete_messages(guild, channel):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             guild = args[0]
-            channel = args[1]
+            channel = guild.system_channel
             if not channel.permissions_for(guild.me).manage_messages:
                 guildLogger = logger.get_guild_logger(guild.id)
                 guildLogger.error(f"Dekomori cannot delete messages in the {channel.name} channel.")
