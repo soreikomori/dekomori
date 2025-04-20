@@ -165,3 +165,19 @@ def remove_userpair(userpair):
         The watchlist userpair to remove.
     """
     del userpair
+
+def is_member_in_watchlist(member, watchlist):
+    """
+    Checks if a user is in the watchlist.
+
+    Parameters
+    ----------
+    member : discord.Member
+        The member to check.
+    watchlist : watchlist
+        The watchlist to check against.
+    """
+    for userpair in watchlist:
+        if wlup.get_user_id(userpair) == member.id:
+            return True
+    return False
