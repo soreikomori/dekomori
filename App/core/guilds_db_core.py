@@ -21,7 +21,6 @@ def add_guild(guild_id: str, guild_name: str):
     """
     if not db.contains(Guild.id == guild_id):
         db.insert(ge.new_guildentry(guild_id, guild_name))
-        db.save()
     else:
         raise ValueError(f"Guild with ID {guild_id} already exists in the database.")
 
