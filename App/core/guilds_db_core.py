@@ -1,6 +1,7 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
 from tinydb import TinyDB, Query
+from DataStructures.List import watchlist as wl
 
 DB_PATH = "env/guilds_db.json"
 db = TinyDB(DB_PATH)
@@ -25,7 +26,7 @@ def default_guild_config(guild_id: str, guild_name: str):
         "id": guild_id,
         "paused": True,
         "bait_roles": [],
-        "watched_users": [],
+        "watchlist": wl.new_watchlist(),
         "dm_on_kick": False,
         "dm_on_ban": False,
         "dm_on_stallkick": False,
@@ -149,9 +150,9 @@ def get_all_guilds():
     """
     return db.all()
 
-def get_guilds_with_watched_users():
+def get_guilds_with_populated_watchlists():
     """
-    Retrieves all guilds with watched users. Watched users are those in each guild's currenteval list.
+    Retrieves all guilds with populated watchlists, which means they have users that have not gone through onboarding.
     This function is used in the stall loop to check for users who might be stalled in onboarding.
 
     Returns
@@ -159,6 +160,6 @@ def get_guilds_with_watched_users():
     list of dict
         A list of dictionaries containing the configurations for guilds with watched users.
     """
-    all_guilds = db.all()
-    watched_guilds = [guild for guild in all_guilds if guild["currenteval"]]
-    return watched_guilds
+    allGuilds = db.all()
+    wlGuilds = [guild for guild in allGuilds if not wl.is_empty(guild["watchlist"])]
+    return wlGuilds
