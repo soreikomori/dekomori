@@ -5,7 +5,7 @@
 
 import datetime
 import discord
-from DataStructures.List import watchlist_userpair as wlup
+from DataStructures.watchlist import watchlist_userpair as wlup
 
 def new_watchlist():
     """
