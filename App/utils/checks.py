@@ -33,3 +33,31 @@ def requires_permission(permission: str):
             return await func(*args, **kwargs)
         return wrapper
     return decorator
+
+def can_message_log_channel(guildObj):
+    """
+    Checks if the bot can send messages to the designated log channel.
+    It assumes that the first argument is the guild object.
+
+    Parameters
+    ----------
+    guildObj : discord.Guild
+        The guild object.
+
+    Returns
+    -------
+    bool
+        True if the bot can send messages to the log channel, False otherwise.
+    """
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            guildObj = args[0]
+            logChannelObj = lcsend.get_log_channel(guildObj)
+            if not logChannelObj.permissions_for(guildObj.me).send_messages:
+                guildLogger = logger.get_guild_logger(guildObj.id)
+                guildLogger.critical("Dekomori cannot send messages to the log channel.")
+                raise PermissionError("Log channel is not available.")
+            return await func(*args, **kwargs)
+        return wrapper
+    return decorator
