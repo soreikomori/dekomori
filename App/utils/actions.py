@@ -5,7 +5,9 @@ import asyncio
 
 from App.utils import logger as logger
 from App.utils import counters as counters
+from App.utils import checks as checks
 
+@checks.requires_permission("kick_members")
 async def kick_user(guildObj, memberObj, type):
     """
     Kicks a user from the guild.
@@ -20,7 +22,9 @@ async def kick_user(guildObj, memberObj, type):
         The type of kick. "KOS" for kick on stall, "Bait" for bait kick.
     """
     guildLogger = logger.get_guild_logger(guildObj.id)
+    guildLogger.debug(f"Attempting to kick {memberObj.name} ({memberObj.id}).")
     reason = get_kick_reason(type)
+    kicked = False
     while not kicked:
         try:
             await memberObj.kick(reason=reason)
