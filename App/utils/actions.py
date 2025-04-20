@@ -34,7 +34,7 @@ async def kick_user(guild, member, type):
         try:
             await member.kick(reason=reason)
             kicked = True
-            counters.increment_kick_counter(guild.id)
+            counters.increment_kick_count(guild.id)
             guildLogger.info(f"Kicked {member.name} ({member.id}).")
         except discord.HTTPException as e:
             guildLogger.error(f"Got an HTTPException while trying to kick {member.name}. Retrying...")
