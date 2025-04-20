@@ -175,7 +175,6 @@ def add_user_to_watchlist(guild: discord.Guild, member: discord.Member):
         watchlist = wl.add_user(member.id, watchlist)
         update_value(guildId, "watchlist", watchlist)
 
-
 def get_guilds_with_populated_watchlists():
     """
     Retrieves all guilds with populated watchlists, which means they have users that have not gone through onboarding.
