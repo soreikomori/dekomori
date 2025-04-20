@@ -40,7 +40,8 @@ def format_command_list(commands):
     Returns
     -------
     str
-        The formatted command string.
+        The formatted command string. For example, if the input is ["command1", "command2", "command3"],
+        the output will be "`command1`, `command2`, and `command3`".
     """
     if not commands:
         raise ValueError("The commands list is empty.")
