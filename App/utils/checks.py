@@ -16,7 +16,7 @@ def requires_permission(permission: str):
     """
     Decorator to check if the bot has the required permission in a guild.
     It assumes that the first argument is the guild.
-
+    TODO Check necessity considering commands.has_permissions
     Parameters
     ----------
     permission : str
