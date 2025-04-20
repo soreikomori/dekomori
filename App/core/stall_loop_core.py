@@ -43,17 +43,6 @@ async def stall_loop():
                     # TODO rejoinchecker
         await asyncio.sleep(60)
 
-def exec_kickonstall( memberObj):
-    """
-    Executes the kick on stall action.
-
-    Parameters
-    ----------
-    memberObj : discord.Member
-        The member object to kick.
-    """
-    actions.kick_member(memberObj, "KOS")
-
 def isKOSActive(guildId):
     """
     Checks if the kick on stall feature is active for the guild.
