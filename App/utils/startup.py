@@ -11,7 +11,6 @@ import logging
 
 from App.utils import config as config
 from App.utils import logger as logger
-from App.utils.constants import VERSION
 from App.core import guilds_db_core as gdb
 
 def initialize_global_logger():
