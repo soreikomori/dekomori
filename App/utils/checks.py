@@ -52,8 +52,8 @@ def can_message_log_channel(guild):
 
     Returns
     -------
-    bool
-        True if the bot can send messages to the log channel, False otherwise.
+    function
+        The decorator function.
     """
     def decorator(func):
         @wraps(func)
