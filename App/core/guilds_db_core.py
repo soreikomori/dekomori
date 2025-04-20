@@ -8,40 +8,42 @@ DB_PATH = "env/guilds_db.json"
 db = TinyDB(DB_PATH)
 Guild = Query()
 
-def add_guild(guild_id: str, guild_name: str):
+def add_guild(guildId: int, guild_name: str):
     """
     Adds a new guild to the database if it doesn't already exist.
     
     Parameters
     ----------
-    guild_id : str
+    guildId : int
         The ID of the guild.
     guild_name : str
         The name of the guild.
     """
-    if not db.contains(Guild.id == guild_id):
-        db.insert(ge.new_guildentry(guild_id, guild_name))
+    guildId = str(guildId)
+    if not db.contains(Guild.id == guildId):
+        db.insert(ge.new_guildentry(guildId, guild_name))
     else:
-        raise ValueError(f"Guild with ID {guild_id} already exists in the database.")
+        raise ValueError(f"Guild with ID {guildId} already exists in the database.")
 
-def remove_guild(guild_id: str):
+def remove_guild(guildId: int):
     """
     Removes a guild from the database.
 
     Parameters
     ----------
-    guild_id : str
+    guildId : int
         The ID of the guild.
     """
-    db.remove(Guild.id == guild_id)
+    guildId = str(guildId)
+    db.remove(Guild.id == guildId)
 
-def get_guild_config(guild_id: str):
+def get_guild_config(guildId: int):
     """
     Retrieves the configuration for a specific guild.
 
     Parameters
     ----------
-    guild_id : str
+    guildId : int
         The ID of the guild.
 
     Returns
@@ -49,36 +51,38 @@ def get_guild_config(guild_id: str):
     dict or None
         The configuration dictionary for the guild, or None if not found.
     """
-    return db.get(Guild.id == guild_id)
+    guildId = str(guildId)
+    return db.get(Guild.id == guildId)
 
-def update_value(guild_id: str, key: str, value):
+def update_value(guildId: int, key: str, value):
     """
     Updates a nested field in the guild configuration.
 
     Parameters
     ----------
-    guild_id : str
+    guildId : int
         The ID of the guild.
     key : str
         The key of the field to update in the guild configuration.
     value : any
         The new value to set for the specified field.
     """
-    config = get_guild_config(guild_id)
+    guildId = str(guildId)
+    config = get_guild_config(guildId)
     if config:
         config[key] = value
-        db.update({key: value}, Guild.id == guild_id)
+        db.update({key: value}, Guild.id == guildId)
         db.save()
     else:
-        raise ValueError(f"Guild with ID {guild_id} not found.")
+        raise ValueError(f"Guild with ID {guildId} not found.")
 
-def get_value(guild_id: str, key: str):
+def get_value(guildId: int, key: str):
     """
     Retrieves a value from the guild configuration.
 
     Parameters
     ----------
-    guild_id : str
+    guildId : int
         The ID of the guild.
     key : str
         The key of the field to retrieve from the guild configuration.
@@ -88,7 +92,8 @@ def get_value(guild_id: str, key: str):
     any or None
         The value of the specified field, or None if not found.
     """
-    config = get_guild_config(guild_id)
+    guildId = str(guildId)
+    config = get_guild_config(guildId)
     if config:
         return config.get(key, None)
     return None
@@ -134,13 +139,13 @@ def get_guilds_with_populated_watchlists():
 # endregion # Watchlist Related
 # region # DM Related
 
-def dm_on_kick(guildId: str):
+def dm_on_kick(guildId: int):
     """
     Checks if DM on kick is enabled for the specified guild.
 
     Parameters
     ----------
-    guildId : str
+    guildId : int
         The ID of the guild.
 
     Returns
@@ -148,15 +153,16 @@ def dm_on_kick(guildId: str):
     bool
         True if DM on kick is enabled, False otherwise.
     """
+    guildId = str(guildId)
     return get_value(guildId, "dm_on_kick") == True
 
-def dm_on_ban(guildId: str):
+def dm_on_ban(guildId: int):
     """
     Checks if DM on ban is enabled for the specified guild.
 
     Parameters
     ----------
-    guildId : str
+    guildId : int
         The ID of the guild.
 
     Returns
@@ -164,15 +170,16 @@ def dm_on_ban(guildId: str):
     bool
         True if DM on ban is enabled, False otherwise.
     """
+    guildId = str(guildId)
     return get_value(guildId, "dm_on_ban") == True
 
-def dm_on_kos(guildId: str):
+def dm_on_kos(guildId: int):
     """
     Checks if DM on kick on stall is enabled for the specified guild.
 
     Parameters
     ----------
-    guildId : str
+    guildId : int
         The ID of the guild.
 
     Returns
