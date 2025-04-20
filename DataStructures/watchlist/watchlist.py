@@ -190,14 +190,3 @@ def get_userpair_time(userpair):
         The time when the user was added to the watchlist.
     """
     return wlup.get_user_time(userpair)
-
-def remove_userpair(userpair):
-    """
-    Removes a userpair from the watchlist.
-
-    Parameters
-    ----------
-    userpair : watchlist_useruserpair
-        The watchlist userpair to remove.
-    """
-    del userpair
