@@ -1,6 +1,7 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
 import discord
+from App.utils.startup import globalLogger
 from functools import wraps
 
 from App.utils import logger as logger

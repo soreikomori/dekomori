@@ -1,7 +1,14 @@
-from App.core.guilds_db_core import add_guild
+# usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import discord
 from App.dekomori import client
+from App.utils.startup import globalLogger
+from App.utils.constants import VERSION
+
 from App.utils import startup as startup
 from App.core import stall_loop_core as stall_loop
+from App.core import guilds_db_core as gdb
 
 @client.event
 async def on_ready():

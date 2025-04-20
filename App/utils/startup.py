@@ -1,4 +1,10 @@
+# usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import discord
+from App.dekomori import client
+from App.utils.constants import VERSION
+
 import json
 import os
 import logging

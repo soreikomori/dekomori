@@ -1,8 +1,13 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
-import asyncio
+
 import discord
 from App.dekomori import client
+from App.utils.startup import globalLogger
+from App.utils.constants import VERSION
+
+
+import asyncio
 from datetime import datetime
 from App.utils import logger as logger
 from App.core import guilds_db_core as gdb

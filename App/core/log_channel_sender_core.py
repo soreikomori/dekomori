@@ -1,7 +1,10 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
-# NOTE: The LCSender module will send messages to the log channel ONLY.
+
 import discord
+from App.dekomori import client
+from App.utils.startup import globalLogger
+from App.utils.constants import VERSION
 
 from App.utils import logger as logger
 from App.core import guilds_db_core as gdb

@@ -1,6 +1,11 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import discord
+from App.dekomori import client
+from App.utils.startup import globalLogger
+from App.utils.constants import VERSION
+
 import asyncio
 
 from App.utils import logger as logger
