@@ -7,6 +7,7 @@ from App.utils.startup import globalLogger
 from App.utils.constants import VERSION
 
 from App.utils import startup as startup
+from App.utils import logger as logger
 from App.core import stall_loop_core as stall_loop
 from App.core import guilds_db_core as gdb
 
@@ -36,3 +37,19 @@ async def on_guild_join(guild):
     # Log the event of joining the guild
     guildLogger.info(f" - - - Dekomori has joined {guild.name}! - - - ")
     guildLogger.info(f"First Setup - Dekomori {VERSION}")
+
+@client.event
+async def on_guild_remove(guild):
+    """
+    Event handler for when the bot is removed from a guild.
+    
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object representing the guild the bot has been removed from.
+    
+    """
+    globalLogger.info(f"Left {guild.name} ({guild.id}).")
+    guildLogger = logger.get_guild_logger(guild.id)
+    guildLogger.info(f" - - - Dekomori has left {guild.name}. Goodbye! - - - ")
+    gdb.remove_guild(guild.id)
