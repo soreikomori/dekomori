@@ -20,6 +20,11 @@ def add_rolestring(guild, rolestring):
         The guild object representing the guild.
     rolestring : str
         The rolestring to be added. It can contain multiple role IDs or mentions separated by commas.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the results of the operation. It includes the roles that were added, already in the list, and invalid roles.
     """
     guildLogger = globalLogger.get_guild_logger(guild.id)
     roleList = fmt.parse_rolestring(rolestring)
