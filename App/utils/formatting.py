@@ -26,3 +26,24 @@ def parse_rolestring(rolestring):
         A list of role IDs.
     """
     return rolestring.split(",") if rolestring != "all" else "all"
+
+def format_command_list(commands):
+    """
+    Formats a list of command names into a string that looks like:
+    `command1`, `command2`, and `command3`.
+
+    Parameters
+    ----------
+    commands : list
+        The list of command names. Given by constants.get_commands_list(client).
+
+    Returns
+    -------
+    str
+        The formatted command string.
+    """
+    if not commands:
+        raise ValueError("The commands list is empty.")
+    if len(commands) > 1:
+        return f"`{', '.join(commands[:-1])}` and `{commands[-1]}`"
+    return f"`{commands[0]}`"
