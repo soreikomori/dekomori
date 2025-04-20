@@ -5,6 +5,12 @@ def nokos_stall(memberMention, memberName, parsedDuration):
     #TODO refactor this, no longer used, check baitrole.py/baitrole for appropriate code 
     return f"**Stall Kick:** {memberMention} ({memberName}) joined earlier, but didn't complete onboarding in {parsedDuration}. They have _NOT_ been kicked, okay!?"
 
+from App.dekomori import client
+from App.utils.constants import get_commands_list as get_commands
+from App.utils import formatting as fmt
+
+commands = get_commands(client)
+
 class commands:
     baitrole = {
         "no_args": lambda: "Hey, what exactly do you want me to do? There's `add` and `remove`!",
