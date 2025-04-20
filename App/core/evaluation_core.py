@@ -99,4 +99,6 @@ def evaluate_member(guild, member):
             actions.ban_user(guild, member, "Bait" if hasBaitRole else "Spamflag")
             dms.ban_dm(member, guild.id)
         actions.delete_welcome_messages(guild, member)
-        gdb.remove_user_from_watchlist(guild, member)
+    else:
+        guildLogger.info(f"Member {member.name} ({member.id}) is genuine.")
+    gdb.remove_user_from_watchlist(guild, member) # Remove the user from the watchlist after evaluation, regardless of the result
