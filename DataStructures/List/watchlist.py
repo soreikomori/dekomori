@@ -24,7 +24,7 @@ def add(watchlist, pair):
 
     Parameters
     ----------
-    watchlist : list
+    watchlist : watchlist
         The watchlist to add the pair to.
     pair : watchlist_pair
         The pair to add to the watchlist.
@@ -43,7 +43,7 @@ def pop(watchlist):
 
     Parameters
     ----------
-    watchlist : list
+    watchlist : watchlist
         The watchlist to pop the pair from.
 
     Returns
@@ -59,7 +59,7 @@ def peek(watchlist):
 
     Parameters
     ----------
-    watchlist : list
+    watchlist : watchlist
         The watchlist to peek at.
 
     Returns
@@ -75,7 +75,7 @@ def is_empty(watchlist):
 
     Parameters
     ----------
-    watchlist : list
+    watchlist : watchlist
         The watchlist to check.
 
     Returns
@@ -91,7 +91,7 @@ def size(watchlist):
 
     Parameters
     ----------
-    watchlist : list
+    watchlist : watchlist
         The watchlist to get the size of.
 
     Returns
