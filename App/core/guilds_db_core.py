@@ -1,6 +1,7 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import discord
 from App.utils.startup import globalLogger
 
 from tinydb import TinyDB, Query
@@ -140,6 +141,26 @@ def get_guilds_with_populated_watchlists():
     allGuilds = db.all()
     wlGuilds = [guild for guild in allGuilds if not wl.is_empty(guild["watchlist"])]
     return wlGuilds
+
+def is_user_in_watchlist(member: discord.Member, guild: discord.Guild):
+    """
+    Checks if a user is in the watchlist of a guild.
+
+    Parameters
+    ----------
+    member : discord.Member
+        The member object representing the user to check.
+    guild : discord.Guild
+        The guild object to check against.
+
+    Returns
+    -------
+    bool
+        True if the user is in the watchlist, False otherwise.
+    """
+    guildId = str(guild.id)
+    watchlist = get_value(guildId, "watchlist")
+    return wl.is_member_in_watchlist(member, watchlist)
 
 # endregion # Watchlist Related
 # region # DM Related
