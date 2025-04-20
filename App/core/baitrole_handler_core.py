@@ -31,15 +31,38 @@ def add_rolestring(guild, rolestring):
     if roleList == "all":
         guildLogger.error("Attempted to add all roles to the bait roles list.")
         raise ex.AddAllRolesError("You cannot add all roles to the bait roles list.")
-    added = []
+
+def get_results_dict(guild, roleList, action):
+    """
+    Takes a list of roles IDs and returns a dictionary of roles that were added, existing, or invalid.
+    
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object representing the guild.
+    roleList : list
+        A list of role IDs or mentions.
+    action : str
+        The action to be performed. Can be either "add" or "remove".
+
+    Returns
+    -------
+    dict
+        A dictionary containing the results of the operation. It includes the roles that were added, already in the list, and invalid.
+    """
+    guildLogger = globalLogger.get_guild_logger(guild.id)
+    valid = []
     existing = []
     invalid = []
     for roleId in roleList:
         try:
             role = get_role(roleId)
             try:
-                gdb.add_bait_role(guild, role.id)
-                added.append(role.id)
+                if action == "remove":
+                    gdb.remove_bait_role(guild, role.id)
+                else:
+                    gdb.add_bait_role(guild, role.id)
+                valid.append(role.id)
             except ex.RoleAlreadyInListError:
                 guildLogger.error(f"Role already in list: {role}")
                 existing.append(role)
@@ -47,11 +70,10 @@ def add_rolestring(guild, rolestring):
             guildLogger.error(f"Invalid role: {role}")
             invalid.append(role)
     return {
-        "added": added,
+        "valid": valid,
         "existing": existing,
         "invalid": invalid
     }
-
 
 def get_role(guild, rawRole):
     """
