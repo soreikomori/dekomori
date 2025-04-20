@@ -91,3 +91,21 @@ async def on_member_update(_, after):
         return # If the user is not in the watchlist or has not completed onboarding, does nothing
     guildLogger.debug(f"Member {member.name} ({member.id}) has completed onboarding.")
     evaluation.evaluate_member(guild, member)
+
+@client.event
+async def on_member_join(member):
+    """
+    Event handler for when a member joins a guild.
+    It checks multiple conditions to determine if the member should be added to the watchlist.
+    
+    Parameters
+    ----------
+    member : discord.Member
+        The member object representing the member who has joined.
+    
+    """
+    guild = member.guild
+    guildLogger = logger.get_guild_logger(guild.id)
+    guildLogger.debug(f"Member {member.name} ({member.id}) has joined.")
+    gdb.add_user_to_watchlist(guild, member)
+    guildLogger.info(f"Added {member.name} ({member.id}) to the watchlist.")
