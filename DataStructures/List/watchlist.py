@@ -5,7 +5,7 @@
 
 import datetime
 import discord
-from DataStructures.List import watchlist_pair as wlp
+from DataStructures.List import watchlist_useruserpair as wlp
 
 def new_watchlist():
     """
@@ -18,44 +18,44 @@ def new_watchlist():
     """
     return []
 
-def add(watchlist, pair):
+def add(watchlist, userpair):
     """
-    Adds a new pair to the watchlist.
+    Adds a new userpair to the watchlist.
 
     Parameters
     ----------
     watchlist : watchlist
-        The watchlist to add the pair to.
-    pair : watchlist_pair
-        The pair to add to the watchlist.
+        The watchlist to add the userpair to.
+    userpair : watchlist_useruserpair
+        The userpair to add to the watchlist.
 
     Returns
     -------
     list
         The updated watchlist.
     """
-    watchlist.append(pair)
+    watchlist.append(userpair)
     return watchlist
 
 def pop(watchlist):
     """
-    Pops the first pair from the watchlist.
+    Pops the first userpair from the watchlist.
 
     Parameters
     ----------
     watchlist : watchlist
-        The watchlist to pop the pair from.
+        The watchlist to pop the userpair from.
 
     Returns
     -------
-    watchlist_pair
-        The popped pair.
+    watchlist_useruserpair
+        The popped userpair.
     """
     return watchlist.pop(0) if watchlist else None
 
 def peek(watchlist):
     """
-    Peeks at the first pair in the watchlist.
+    Peeks at the first userpair in the watchlist.
 
     Parameters
     ----------
@@ -64,8 +64,8 @@ def peek(watchlist):
 
     Returns
     -------
-    watchlist_pair
-        The first pair in the watchlist.
+    watchlist_useruserpair
+        The first userpair in the watchlist.
     """
     return watchlist[0] if watchlist else None
 
@@ -103,9 +103,9 @@ def size(watchlist):
 
 # Utility Functions
 
-def purge_pairs(watchlist, guildObj):
+def purge_userpairs(watchlist, guildObj):
     """
-    Purges all pairs from the watchlist that are not valid in the guild.
+    Purges all userpairs from the watchlist that are not valid in the guild.
     "Not valid" means that the user is not in the guild.
 
     Parameters
@@ -120,21 +120,21 @@ def purge_pairs(watchlist, guildObj):
     watchlist
         The purged watchlist.
     """
-    wlPurged = [pair for pair in watchlist if wlp.user_exists(pair, guildObj)]
+    wlPurged = [userpair for userpair in watchlist if wlp.user_exists(userpair, guildObj)]
     return wlPurged
 
-def get_userpair_id(pair):
+def get_useruserpair_id(userpair):
     """
-    Gets the user ID from the watchlist pair.
+    Gets the user ID from the watchlist userpair.
 
     Parameters
     ----------
-    pair : watchlist_pair
-        The watchlist pair to get the user ID from.
+    userpair : watchlist_useruserpair
+        The watchlist userpair to get the user ID from.
 
     Returns
     -------
     int
-        The user ID from the watchlist pair.
+        The user ID from the watchlist userpair.
     """
-    return wlp.get_user_id(pair)
+    return wlp.get_user_id(userpair)
