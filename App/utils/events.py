@@ -10,6 +10,7 @@ from App.utils import startup as startup
 from App.utils import logger as logger
 from App.core import stall_loop_core as stall_loop
 from App.core import guilds_db_core as gdb
+from App.core import evaluation_core as evaluation
 
 @client.event
 async def on_ready():
@@ -70,3 +71,23 @@ async def on_member_remove(member):
     guildLogger.debug(f"Member {member.name} ({member.id}) has left.")
     if gdb.is_user_in_watchlist(guild, member):
         gdb.remove_user_from_watchlist(guild, member)
+
+@client.event
+async def on_member_update(_, after):
+    """
+    Event handler for when a member is updated.
+    This function is Dekomori's core.
+    
+    Parameters
+    ----------
+    after : discord.Member
+        The member object representing the member after the update.
+    
+    """
+    guild = after.guild
+    guildLogger = logger.get_guild_logger(guild.id)
+    member = after
+    if not gdb.is_user_in_watchlist(guild, member) and after.flags.completed_onboarding: # Main checker for onboarding
+        return # If the user is not in the watchlist or has not completed onboarding, does nothing
+    guildLogger.debug(f"Member {member.name} ({member.id}) has completed onboarding.")
+    evaluation.evaluate_member(guild, member)
