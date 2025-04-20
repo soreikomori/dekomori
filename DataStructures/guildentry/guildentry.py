@@ -33,7 +33,7 @@ def new_guildentry(guildId, guildName):
         "dm_on_kick": False,
         "dm_on_ban": False,
         "dm_on_kos": False,
-        "spammer_check": False,
+        "kick_spamflagged": False,
         "rejoin_checker": {
             "enabled": False,
             "userId": 0,
