@@ -62,3 +62,30 @@ async def add(ctx, role):
         await ctx.send(msg.commands.baitrole["add"]["invalid"](result["invalid"]))
         guildLogger.info(f"Invalid roles: {result['invalid']}")
     guildLogger.info(f"Completed adding baitroles.")
+
+@baitrole.command(aliases=["r"], brief="Remove a role from the bait roles list.")
+@commands.has_permissions(manage_roles=True)
+async def remove(ctx, role):
+    """Remove a role from the bait roles list. You can also operate multiple roles by separating them with commas inside quotes, for example d!baitrole add "@role1, @role2". You can also remove all roles by typing d!baitrole remove all.
+
+    Parameters
+    ----------
+    role : str
+        The role(s) to be removed. Can be a mention, an ID, or "all".
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    guildLogger.info(f"{ctx.author.name} requested to remove baitroles.")
+    guildLogger.info(f"Role(s): {role}")
+    result = bait.remove_rolestring(ctx.guild, rolestring=role)
+    if result["removed"]:
+        await ctx.send(msg.commands.baitrole["remove"]["valid"](result["removed"]))
+        guildLogger.info(f"Removed roles: {result['removed']}")
+    if result["not_in_list"]:
+        plural = "are" if len(result["not_in_list"]) > 1 else "is"
+        await ctx.send(msg.commands.baitrole["remove"]["not_in_list"](result["not_in_list"], plural))
+        guildLogger.info(f"Roles not in list: {result['not_in_list']}")
+    if result["invalid"]:
+        plural = "are" if len(result["invalid"]) > 1 else "is"
+        await ctx.send(msg.commands.baitrole["remove"]["invalid"](result["invalid"], plural))
+        guildLogger.info(f"Invalid roles: {result['invalid']}")
+    guildLogger.info(f"Completed removing baitroles.")
