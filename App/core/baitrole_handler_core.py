@@ -47,3 +47,23 @@ def add_rolestring(guild, rolestring):
         "invalid": invalid
     }
 
+
+def get_role(guild, rawRole):
+    """
+    Retrieves a role object from a guild based on a raw role string.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object representing the guild.
+    rawRole : str
+        The role string to be parsed. It can be a mention (e.g., <@&123456789012345678>) or an ID (e.g., 123456789012345678).
+    """
+    try:
+        if rawRole.startswith("<@&") and rawRole.endswith(">"):
+            role_id = rawRole[3:-1]
+        else:
+            role_id = rawRole
+        return guild.get_role(int(role_id))
+    except Exception:
+        raise ValueError(f"Invalid role: {rawRole}")
