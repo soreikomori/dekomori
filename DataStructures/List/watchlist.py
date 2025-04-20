@@ -5,7 +5,7 @@
 
 import datetime
 import discord
-from DataStructures.List import watchlist_useruserpair as wlp
+from DataStructures.List import watchlist_userpair as wlup
 
 def new_watchlist():
     """
@@ -123,7 +123,7 @@ def purge_userpairs(watchlist, guildObj):
     wlPurged = [userpair for userpair in watchlist if wlp.user_exists(userpair, guildObj)]
     return wlPurged
 
-def get_useruserpair_id(userpair):
+def get_userpair_id(userpair):
     """
     Gets the user ID from the watchlist userpair.
 
@@ -137,4 +137,4 @@ def get_useruserpair_id(userpair):
     int
         The user ID from the watchlist userpair.
     """
-    return wlp.get_user_id(userpair)
+    return wlup.get_user_id(userpair)
