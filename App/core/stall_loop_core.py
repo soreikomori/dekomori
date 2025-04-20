@@ -8,7 +8,7 @@ from App.utils import logger as logger
 from App.core import guilds_db_core as gdb
 from App.core import log_channel_sender_core as lcsender
 from App.utils import actions as actions
-from DataStructures.List import watchlist as wl
+from DataStructures.watchlist import watchlist as wl
 
 def initialize_stall_loop():
     """
@@ -29,7 +29,7 @@ async def stall_loop():
             guildLogger.debug(f"Stall Loop - Checking guild {guildObj.name} ({guildId})")
             watchlist = gdb.get_value(guildId, "watchlist")
             guildTimeout = gdb.get_value(guildId, "stall_timeout")
-            trueWatchlist = wl.purge_pairs(watchlist, guildObj)
+            trueWatchlist = wl.purge_userpairs(watchlist, guildObj)
             for userpair in trueWatchlist:
                 userpairId = wl.get_userpair_id(userpair)
                 timeElapsed = datetime.datetime.now() - wl.get_userpair_time(userpair)
