@@ -32,7 +32,7 @@ def add_rolestring(guild, rolestring):
         guildLogger.error("Attempted to add all roles to the bait roles list.")
         raise ex.AddAllRolesError("You cannot add all roles to the bait roles list.")
     added = []
-    already_in_list = []
+    existing = []
     invalid = []
     for roleId in roleList:
         try:
@@ -42,13 +42,13 @@ def add_rolestring(guild, rolestring):
                 added.append(role.id)
             except ex.RoleAlreadyInListError:
                 guildLogger.error(f"Role already in list: {role}")
-                already_in_list.append(role)
+                existing.append(role)
         except ValueError:
             guildLogger.error(f"Invalid role: {role}")
             invalid.append(role)
     return {
         "added": added,
-        "already": already_in_list,
+        "existing": existing,
         "invalid": invalid
     }
 
