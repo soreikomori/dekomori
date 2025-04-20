@@ -6,9 +6,10 @@ from App.dekomori import client
 from datetime import datetime
 from App.utils import logger as logger
 from App.core import guilds_db_core as gdb
-from App.core import log_channel_sender_core as lcsender
+from App.core import log_channel_sender_core as lcsend
 from App.utils import actions as actions
 from DataStructures.watchlist import watchlist as wl
+from App.core import dming_core as dms
 
 def initialize_stall_loop():
     """
@@ -37,10 +38,13 @@ async def stall_loop():
                     memberObj = discord.utils.get(guildObj.members, id=userpairId)
                     guildLogger.info(f"Stall Loop - User {memberObj.name} ({str(userpairId)}) has reached the timeout limit.")
                     if isKOSActive(guildId):
-                        exec_kickonstall(guildObj, memberObj)
+                        actions.kick_member(memberObj, "KOS")
+                        dms.kick_on_stall_dm(memberObj, guildId)
                     else:
-                        lcsender.send_nokos_stall(guildId, memberObj)
+                        lcsend.stall_no_kos(guildObj, memberObj)
                     # TODO rejoinchecker
+                    wl.remove_userpair(userpair)
+                    guildLogger.debug(f"Stall Loop - Removed userpair {userpairId} from watchlist.")
         await asyncio.sleep(60)
 
 def isKOSActive(guildId):
