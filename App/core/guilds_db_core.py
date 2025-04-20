@@ -1,5 +1,8 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+from App.utils.startup import globalLogger
+
 from tinydb import TinyDB, Query
 from DataStructures.watchlist import watchlist as wl
 from DataStructures.guildentry import guildentry as ge
@@ -22,7 +25,9 @@ def add_guild(guildId: int, guild_name: str):
     guildId = str(guildId)
     if not db.contains(Guild.id == guildId):
         db.insert(ge.new_guildentry(guildId, guild_name))
+        globalLogger.info(f"Added new guild to database: {guildId} - {guild_name}")
     else:
+        globalLogger.warning(f"Guild with ID {guildId} already exists in the database. Skipping addition.")
         raise ValueError(f"Guild with ID {guildId} already exists in the database.")
 
 def remove_guild(guildId: int):
@@ -36,6 +41,7 @@ def remove_guild(guildId: int):
     """
     guildId = str(guildId)
     db.remove(Guild.id == guildId)
+    globalLogger.info(f"Removed guild from database: {guildId}")
 
 def get_guild_config(guildId: int):
     """
@@ -72,7 +78,6 @@ def update_value(guildId: int, key: str, value):
     if config:
         config[key] = value
         db.update({key: value}, Guild.id == guildId)
-        db.save()
     else:
         raise ValueError(f"Guild with ID {guildId} not found.")
 
