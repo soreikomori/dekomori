@@ -29,3 +29,25 @@ async def kick_on_stall_dm(member, guildId):
             guildLogger.info(f"Sent kick on stall DM to {member.name} ({member.id}).")
         except discord.errors.Forbidden:
             guildLogger.warning(f"Could not send kick on stall DM to {member.name} ({member.id}).")
+
+
+async def ban_dm(member, guildId):
+    """
+    Sends a DM to the user when they are banned.
+    
+    Parameters
+    ----------
+    member : discord.Member
+        The member object representing the user to be banned.
+    guildId : int
+        The ID of the guild.    
+    """
+    if gdb.dm_on_ban(guildId):
+        message = gdb.get_value(guildId, "ban_dm_message")
+        guildLogger = logger.get_guild_logger(guildId)
+        dmChannel = await member.create_dm()
+        try:
+            await dmChannel.send(content=message)
+            guildLogger.info(f"Sent ban DM to {member.name} ({member.id}).")
+        except discord.errors.Forbidden:
+            guildLogger.warning(f"Could not send ban DM to {member.name} ({member.id}).") 
