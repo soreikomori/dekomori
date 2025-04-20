@@ -6,6 +6,7 @@ from App.utils.startup import globalLogger
 
 from tinydb import TinyDB, Query
 from App.utils import checks as checks
+from App.utils import exceptions as ex
 from DataStructures.watchlist import watchlist as wl
 from DataStructures.guildentry import guildentry as ge
 
@@ -316,7 +317,7 @@ def add_bait_role(guild: discord.Guild, roleId: int):
         bait_roles.append(roleId)
         update_value(guildId, "bait_roles", bait_roles)
     else:
-        raise ValueError(f"Role with ID {roleId} is already in the bait roles list.")
+        raise ex.RoleAlreadyInListError(f"Role with ID {roleId} is already in the bait roles list.")
 
 def get_all_bait_roles(guild: discord.Guild):
     """
