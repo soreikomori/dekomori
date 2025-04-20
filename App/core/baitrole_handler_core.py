@@ -76,8 +76,8 @@ def get_results_dict(guild, roleList, action):
         A dictionary containing the results of the operation. It includes the roles that were added, already in the list, and invalid.
     """
     guildLogger = globalLogger.get_guild_logger(guild.id)
-    valid = []
-    existing = []
+    success = []
+    notdoable = []
     invalid = []
     for roleId in roleList:
         try:
@@ -87,16 +87,19 @@ def get_results_dict(guild, roleList, action):
                     gdb.remove_bait_role(guild, role.id)
                 else:
                     gdb.add_bait_role(guild, role.id)
-                valid.append(role.id)
+                success.append(role.id)
             except ex.RoleAlreadyInListError:
                 guildLogger.error(f"Role already in list: {role}")
-                existing.append(role)
+                notdoable.append(role.id)
+            except ex.RoleNotInListError:
+                guildLogger.error(f"Role not in list: {role}")
+                notdoable.append(role.id)
         except ValueError:
             guildLogger.error(f"Invalid role: {role}")
             invalid.append(role)
     return {
-        "valid": valid,
-        "existing": existing,
+        "valid": success,
+        "notdoable": notdoable,
         "invalid": invalid
     }
 
