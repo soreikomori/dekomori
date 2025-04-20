@@ -7,6 +7,8 @@ from App.utils.startup import globalLogger
 from App.utils.constants import VERSION
 
 from App.core import guilds_db_core as gdb
+from App.utils import logger as logger
+from App.utils import actions as actions
 
 def has_bait_role(guild, member):
     """
