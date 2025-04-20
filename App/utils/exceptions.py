@@ -14,6 +14,10 @@ class RoleAlreadyInListError(BaitRoleError):
     """Raised when trying to add a role that's already in the bait role list."""
     pass
 
+class RoleNotInListError(BaitRoleError):
+    """Raised when trying to remove a role that's not in the bait role list."""
+    pass
+
 class AddAllRolesError(BaitRoleError):
     """Raised when an attempt is made to add all roles to the bait roles list."""
     pass
