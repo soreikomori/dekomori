@@ -34,7 +34,7 @@ def requires_permission(permission: str):
                 guildLogger = logger.get_guild_logger(guild.id)
                 guildLogger.critical(f"Dekomori lacks '{permission}' permission.")
                 # TODO Pause deko
-                await lcsend.send_permission_error(guild.id, permission)
+                await lcsend.permission_error(guild.id, permission)
                 raise PermissionError(f"Dekomori lacks '{permission}' permission.")
             return await func(*args, **kwargs)
         return wrapper
