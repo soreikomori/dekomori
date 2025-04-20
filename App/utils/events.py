@@ -7,10 +7,10 @@ from App.core import stall_loop_core as stall_loop
 async def on_ready():
     print(f"Dekomori Sanae, koko ni suisu!")
     print(f"Logged in succesfully as {client.user}.")
-    startup.setup_rich_presence(client)
-    startup.initialize_loggers(client.guilds)
-    stall_loop.initialize_stall_loop(client)
-
+    startup.setup_rich_presence()
+    startup.initialize_loggers()
+    print("Ready!")
+    stall_loop.initialize_stall_loop()
 
 
 """
