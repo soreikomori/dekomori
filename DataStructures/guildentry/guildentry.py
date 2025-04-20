@@ -32,7 +32,7 @@ def new_guildentry(guildId, guildName):
         "watchlist": wl.new_watchlist(),
         "dm_on_kick": False,
         "dm_on_ban": False,
-        "dm_on_stallkick": False,
+        "dm_on_kos": False,
         "spammer_check": False,
         "rejoin_checker": {
             "enabled": False,
@@ -48,7 +48,7 @@ def new_guildentry(guildId, guildName):
         "stall_timeout": 300,
         "kick_dm_message": f"You have been kicked from {guildName} for suspicious activity.",
         "ban_dm_message": f"You have been banned from {guildName} for suspicious activity.",
-        "stall_dm_message": f"You have been kicked from {guildName} because you didn't complete onboarding in a while. If you join back, please complete onboarding.",
+        "kos_dm_message": f"You have been kicked from {guildName} because you didn't complete onboarding in a while. If you join back, please complete onboarding.",
         "ban_counter": 0,
         "kick_counter": 0,
         "delete_welcome_message": False,
