@@ -5,8 +5,10 @@ import discord
 from App.utils.startup import globalLogger
 
 from tinydb import TinyDB, Query
+from App.utils import checks as checks
 from DataStructures.watchlist import watchlist as wl
 from DataStructures.guildentry import guildentry as ge
+
 
 DB_PATH = "env/guilds_db.json"
 db = TinyDB(DB_PATH)
@@ -148,6 +150,31 @@ def is_paused(guild: discord.Guild):
 # endregion # Miscellaneous
 
 # region # Watchlist Related
+
+@checks.member_join_fullcheck()
+def add_user_to_watchlist(guild: discord.Guild, member: discord.Member):
+    """
+    Adds a user to the watchlist of a guild.
+    In order for this function to work, 5 checks must be passed:
+    1. Pause Check: Dekomori must not be paused in the guild.
+    2. Log Channel Check: The guild must have a log channel set and Dekomori must be able to send messages in it.
+    3. Bait Roles Check: The guild must have bait roles set and Dekomori must be able to add them to the user.
+    4. Genuine Bot Check: The user must not be a genuine bot.
+    5. Onboarding Enabled Check: The guild must have onboarding enabled.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to add the user to.
+    member : discord.Member
+        The member object representing the user to add.
+    """
+    guildId = str(guild.id)
+    watchlist = get_value(guildId, "watchlist")
+    if not wl.is_present(member.id, watchlist):
+        watchlist = wl.add_user(member.id, watchlist)
+        update_value(guildId, "watchlist", watchlist)
+
 
 def get_guilds_with_populated_watchlists():
     """
