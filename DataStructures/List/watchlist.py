@@ -100,3 +100,25 @@ def size(watchlist):
         The size of the watchlist.
     """
     return len(watchlist)
+
+# Utility Functions
+
+def purge_pairs(watchlist, guildObj):
+    """
+    Purges all pairs from the watchlist that are not valid in the guild.
+    "Not valid" means that the user is not in the guild.
+
+    Parameters
+    ----------
+    watchlist : watchlist
+        The watchlist to purge.
+    guildObj : discord.Guild
+        The guild object to check against.
+
+    Returns
+    -------
+    watchlist
+        The purged watchlist.
+    """
+    wlPurged = [pair for pair in watchlist if wlp.user_exists(pair, guildObj)]
+    return wlPurged
