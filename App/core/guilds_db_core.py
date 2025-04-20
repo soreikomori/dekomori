@@ -104,6 +104,8 @@ def get_all_guilds():
     """
     return db.all()
 
+# region # Watchlist Related
+
 def get_guilds_with_populated_watchlists():
     """
     Retrieves all guilds with populated watchlists, which means they have users that have not gone through onboarding.
@@ -117,3 +119,56 @@ def get_guilds_with_populated_watchlists():
     allGuilds = db.all()
     wlGuilds = [guild for guild in allGuilds if not wl.is_empty(guild["watchlist"])]
     return wlGuilds
+
+# endregion # Watchlist Related
+# region # DM Related
+
+def dm_on_kick(guildId: str):
+    """
+    Checks if DM on kick is enabled for the specified guild.
+
+    Parameters
+    ----------
+    guildId : str
+        The ID of the guild.
+
+    Returns
+    -------
+    bool
+        True if DM on kick is enabled, False otherwise.
+    """
+    return get_value(guildId, "dm_on_kick") == True
+
+def dm_on_ban(guildId: str):
+    """
+    Checks if DM on ban is enabled for the specified guild.
+
+    Parameters
+    ----------
+    guildId : str
+        The ID of the guild.
+
+    Returns
+    -------
+    bool
+        True if DM on ban is enabled, False otherwise.
+    """
+    return get_value(guildId, "dm_on_ban") == True
+
+def dm_on_kos(guildId: str):
+    """
+    Checks if DM on kick on stall is enabled for the specified guild.
+
+    Parameters
+    ----------
+    guildId : str
+        The ID of the guild.
+
+    Returns
+    -------
+    bool
+        True if DM on kick on stall is enabled, False otherwise.
+    """
+    return get_value(guildId, "dm_on_kos") == True
+
+# endregion # DM Related
