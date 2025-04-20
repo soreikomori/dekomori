@@ -53,3 +53,20 @@ async def on_guild_remove(guild):
     guildLogger = logger.get_guild_logger(guild.id)
     guildLogger.info(f" - - - Dekomori has left {guild.name}. Goodbye! - - - ")
     gdb.remove_guild(guild.id)
+
+@client.event
+async def on_member_remove(member):
+    """
+    Event handler for when a member is removed from a guild.
+    
+    Parameters
+    ----------
+    member : discord.Member
+        The member object representing the member who has been removed.
+    
+    """
+    guild = member.guild
+    guildLogger = logger.get_guild_logger(guild.id)
+    guildLogger.debug(f"Member {member.name} ({member.id}) has left.")
+    if gdb.is_user_in_watchlist(guild, member):
+        gdb.remove_user_from_watchlist(guild, member)
