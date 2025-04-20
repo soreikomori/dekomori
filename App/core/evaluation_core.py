@@ -29,7 +29,7 @@ def has_bait_role(guild, member):
     bool
         True if the member has the bait role, False otherwise.
     """
-    baitroleList = gdb.get_bait_roles(guild.id)
+    baitroleList = gdb.get_bait_roles(guild)
     return any(role.id in baitroleList for role in member.roles)
 
 def is_spammer_kickable(guild, member):
