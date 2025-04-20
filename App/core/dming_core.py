@@ -30,6 +30,26 @@ async def kick_on_stall_dm(member, guildId):
         except discord.errors.Forbidden:
             guildLogger.warning(f"Could not send kick on stall DM to {member.name} ({member.id}).")
 
+async def kick_dm(member, guildId):
+    """
+    Sends a DM to the user when they are kicked.
+    
+    Parameters
+    ----------
+    member : discord.Member
+        The member object representing the user to be kicked.
+    guildId : int
+        The ID of the guild.    
+    """
+    if gdb.dm_on_kick(guildId):
+        message = gdb.get_value(guildId, "kick_dm_message")
+        guildLogger = logger.get_guild_logger(guildId)
+        dmChannel = await member.create_dm()
+        try:
+            await dmChannel.send(content=message)
+            guildLogger.info(f"Sent kick DM to {member.name} ({member.id}).")
+        except discord.errors.Forbidden:
+            guildLogger.warning(f"Could not send kick DM to {member.name} ({member.id}).")
 
 async def ban_dm(member, guildId):
     """
