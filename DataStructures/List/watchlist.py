@@ -120,7 +120,7 @@ def purge_userpairs(watchlist, guildObj):
     watchlist
         The purged watchlist.
     """
-    wlPurged = [userpair for userpair in watchlist if wlp.user_exists(userpair, guildObj)]
+    wlPurged = [userpair for userpair in watchlist if wlup.user_exists(userpair, guildObj)]
     return wlPurged
 
 def get_userpair_id(userpair):
