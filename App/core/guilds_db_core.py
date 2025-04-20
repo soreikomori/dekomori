@@ -160,7 +160,24 @@ def is_user_in_watchlist(member: discord.Member, guild: discord.Guild):
     """
     guildId = str(guild.id)
     watchlist = get_value(guildId, "watchlist")
-    return wl.is_member_in_watchlist(member, watchlist)
+
+def remove_user_from_watchlist(guild: discord.Guild, member: discord.Member):
+    """
+    Removes a user from the watchlist of a guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to remove the user from.
+    userId : int
+        The ID of the user to remove from the watchlist.
+    """
+    guildId = str(guild.id)
+    watchlist = get_value(guildId, "watchlist")
+    if wl.is_present(member, watchlist):
+        watchlist = wl.remove_user(member.id, watchlist)
+        update_value(guildId, "watchlist", watchlist)
+        globalLogger.info(f"Removed user {member.name} from watchlist in guild {guild.name} ({guildId}).")
 
 # endregion # Watchlist Related
 # region # DM Related
