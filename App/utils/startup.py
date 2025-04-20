@@ -1,13 +1,25 @@
 import discord
 import json
 import os
+import logging
 
 from App.utils import config as config
 from App.utils import logger as logger
 from App.utils.constants import VERSION
 from App.core import guilds_db_core as gdb
 
-globalLogger = logger.get_global_logger()
+def initialize_global_logger():
+    """
+    Initializes the global logger for the bot.
+
+    Returns
+    -------
+    logging.Logger
+        The global logger instance.
+    """
+    global globalLogger
+    globalLogger = logger.setup_logger("global", level=logging.INFO, filename="dekomori.log")
+    return globalLogger
 
 async def setup_rich_presence(client):
     """
@@ -31,9 +43,9 @@ def initialize_all_guild_loggers(client_guilds):
         List of guilds the client is in.
     """
     for guild in client_guilds:
-        initialize_logger(str(guild.id))
+        initialize_guild_logger(str(guild.id))
 
-def initialize_logger(guildId):
+def initialize_guild_logger(guildId):
     """
     Initializes the logger for a specific guild.
 
