@@ -52,7 +52,7 @@ def initialize_guild_logger(guildId):
 
     Parameters
     ----------
-    guildId : str
+    guildId : int
         The ID of the guild.
     """
     globalLogger.debug(f"Initializing logger for guild: {guildId}")
