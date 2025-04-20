@@ -1,14 +1,14 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
-# The watchlist pair is a dictionary with the user ID and a timestamp.
+# The watchlist userpair is a dictionary with the user ID and a timestamp.
 # It's the main structure used to keep track of users in a watchlist.
 
 import datetime
 import discord
 
-def new_wlpair(userId, time=datetime.datetime.now()):
+def new_userpair(userId, time=datetime.datetime.now()):
     """
-    Creates a new watchlist pair.
+    Creates a new watchlist userpair.
     
     Parameters
     ----------
@@ -19,60 +19,60 @@ def new_wlpair(userId, time=datetime.datetime.now()):
         
     Returns
     -------
-    wl_pair
-        A watchlist pair containing the user ID and time.
+    wl_userpair
+        A watchlist userpair containing the user ID and time.
     """
     return {
-        "userId": userId,
+        "id": userId,
         "time": time
     }
 
-def user_exists(wl_pair, guildObj):
+def user_exists(wl_userpair, guildObj):
     """
-    Checks if a user in the watchlist pair exists in the guild.
+    Checks if a user in the watchlist userpair exists in the guild.
     
     Parameters
     ----------
-    wl_pair : wl_pair
-        The watchlist pair to check.
+    wl_userpair : wl_userpair
+        The watchlist userpair to check.
     guildObj : discord.Guild
         The guild object to check against.
         
     Returns
     -------
     bool
-        True if the watchlist pair is valid, False otherwise.
+        True if the watchlist userpair is valid, False otherwise.
     """
-    return discord.utils.get(guildObj.members, id=wl_pair["userId"]) is not None
+    return discord.utils.get(guildObj.members, id=wl_userpair["id"]) is not None
 
-def get_user_id(wl_pair):
+def get_user_id(wl_userpair):
     """
-    Gets the user ID from the watchlist pair.
+    Gets the user ID from the watchlist userpair.
     
     Parameters
     ----------
-    wl_pair : wl_pair
-        The watchlist pair to get the user ID from.
+    wl_userpair : wl_userpair
+        The watchlist userpair to get the user ID from.
         
     Returns
     -------
     int
-        The user ID from the watchlist pair.
+        The user ID from the watchlist userpair.
     """
-    return wl_pair["userId"]
+    return wl_userpair["id"]
 
-def get_user_time(wl_pair):
+def get_user_time(wl_userpair):
     """
     Gets the time when a user was added to the watchlist.
     
     Parameters
     ----------
-    wl_pair : wl_pair
-        The watchlist pair to get the time from.
+    wl_userpair : wl_userpair
+        The watchlist userpair to get the time from.
         
     Returns
     -------
     datetime.datetime
         The time when the user was added to the watchlist.
     """
-    return wl_pair["time"]
+    return wl_userpair["time"]
