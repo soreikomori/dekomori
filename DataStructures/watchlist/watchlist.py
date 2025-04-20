@@ -101,6 +101,24 @@ def size(watchlist):
     """
     return len(watchlist)
 
+def is_present(member, watchlist):
+    """
+    Checks if a user is in the watchlist.
+
+    Parameters
+    ----------
+    member : discord.Member
+        The member to check.
+    watchlist : watchlist
+        The watchlist to check against.
+
+    Returns
+    -------
+    bool
+        True if the user is in the watchlist, False otherwise.
+    """
+    return any(wlup.get_user_id(userpair) == member.id for userpair in watchlist)
+
 # Utility Functions
 
 def purge_userpairs(watchlist, guild):
