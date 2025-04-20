@@ -41,6 +41,35 @@ async def kick_user(guild, member, type):
             guildLogger.debug(f"HTTPException: {e}")
             await asyncio.sleep(5)
 
+@checks.requires_permission("ban_members")
+async def ban_user(guild, member, type):
+    """
+    Bans a user from the guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object from which to ban the user.
+    member : discord.Member
+        The member object representing the user to be banned.
+    type : Literal["KOS", "Bait"]
+        The type of ban. "KOS" for kick on stall, "Bait" for bait kick.
+    """
+    guildLogger = logger.get_guild_logger(guild.id)
+    guildLogger.debug(f"Attempting to ban {member.name} ({member.id}).")
+    reason = get_reason(type)
+    banned = False
+    while not banned:
+        try:
+            await member.ban(reason=reason)
+            banned = True
+            counters.increment_ban_count(guild.id)
+            guildLogger.info(f"Banned {member.name} ({member.id}).")
+        except discord.HTTPException as e:
+            guildLogger.error(f"Got an HTTPException while trying to ban {member.name}. Retrying...")
+            guildLogger.debug(f"HTTPException: {e}")
+            await asyncio.sleep(5)
+
 def get_reason(type):
     """
     Gets the kick reason based on the type of kick. This reason will be logged in the guild's audit log.
