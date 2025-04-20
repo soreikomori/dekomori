@@ -126,6 +126,27 @@ def get_all_guilds():
     """
     return db.all()
 
+# region # Miscellaneous
+
+def is_paused(guild: discord.Guild):
+    """
+    Checks if Dekomori is paused in a specific guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to check.
+
+    Returns
+    -------
+    bool
+        True if the guild is paused, False otherwise.
+    """
+    guildId = str(guild.id)
+    return get_value(guildId, "paused") == True
+
+# endregion # Miscellaneous
+
 # region # Watchlist Related
 
 def get_guilds_with_populated_watchlists():
