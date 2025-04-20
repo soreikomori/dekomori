@@ -142,17 +142,17 @@ def get_guilds_with_populated_watchlists():
     wlGuilds = [guild for guild in allGuilds if not wl.is_empty(guild["watchlist"])]
     return wlGuilds
 
-def is_user_in_watchlist(member: discord.Member, guild: discord.Guild):
+def is_user_in_watchlist(guild: discord.Guild, member: discord.Member):
     """
     Checks if a user is in the watchlist of a guild.
 
     Parameters
     ----------
-    member : discord.Member
-        The member object representing the user to check.
     guild : discord.Guild
         The guild object to check against.
-
+    member : discord.Member
+        The member object representing the user to check.
+    
     Returns
     -------
     bool
@@ -160,6 +160,7 @@ def is_user_in_watchlist(member: discord.Member, guild: discord.Guild):
     """
     guildId = str(guild.id)
     watchlist = get_value(guildId, "watchlist")
+    return wl.is_present(member.id, watchlist)
 
 def remove_user_from_watchlist(guild: discord.Guild, member: discord.Member):
     """
