@@ -37,7 +37,7 @@ async def stall_loop():
                 if timeElapsed >= datetime.timedelta(seconds=guildTimeout):
                     memberObj = discord.utils.get(guildObj.members, id=userpairId)
                     guildLogger.info(f"Stall Loop - User {memberObj.name} ({str(userpairId)}) has reached the timeout limit.")
-                    if isKOSActive(guildId):
+                    if is_kos_active(guildId):
                         actions.kick_member(memberObj, "KOS")
                         dms.kick_on_stall_dm(memberObj, guildId)
                     else:
@@ -47,7 +47,7 @@ async def stall_loop():
                     guildLogger.debug(f"Stall Loop - Removed userpair {userpairId} from watchlist.")
         await asyncio.sleep(60)
 
-def isKOSActive(guildId):
+def is_kos_active(guildId):
     """
     Checks if the kick on stall feature is active for the guild.
 
