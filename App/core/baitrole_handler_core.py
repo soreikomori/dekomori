@@ -31,8 +31,8 @@ def add_rolestring(guild, rolestring):
     if roleList == "all":
         guildLogger.error("Attempted to add all roles to the bait roles list.")
         raise ex.AddAllRolesError("You cannot add all roles to the bait roles list.")
+    return get_results_dict(guild, roleList)
     
-
 def remove_rolestring(guild, rolestring):
     """
     Removes a rolestring (a string of one or more role IDs or mentions) from the bait roles list for a guild.
