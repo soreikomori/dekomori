@@ -49,3 +49,20 @@ def is_spammer_kickable(guild, member):
     isSpammer = member.public_flags.spammer
     guildKicksSpamflagged = gdb.get_value(guild.id, "kick_spamflagged")
     return isSpammer and guildKicksSpamflagged
+
+def get_preferred_action(guild):
+    """
+    Get the preferred action for the guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object representing the guild.
+
+    Returns
+    -------
+    str
+        The preferred action for the guild.
+    """
+    return "ban" if gdb.get_value(guild.id, "ban") else "kick"
+
