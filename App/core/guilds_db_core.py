@@ -178,7 +178,6 @@ def remove_user_from_watchlist(guild: discord.Guild, member: discord.Member):
     if wl.is_present(member, watchlist):
         watchlist = wl.remove_user(member.id, watchlist)
         update_value(guildId, "watchlist", watchlist)
-        globalLogger.info(f"Removed user {member.name} from watchlist in guild {guild.name} ({guildId}).")
 
 # endregion # Watchlist Related
 # region # DM Related
