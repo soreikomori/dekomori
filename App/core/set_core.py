@@ -28,3 +28,16 @@ def set_log_channel(guild: discord.Guild, channel: discord.TextChannel):
         If the bot does not have permission to send messages in the specified channel.
     """
     gdb.set_log_channel(guild.id, channel.id)
+
+def set_stall_timeout(guild: discord.Guild, timeout: int):
+    """Set the stall timeout for a given guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild where the stall timeout will be set.
+    timeout : int
+        The timeout duration in seconds.
+    """
+    # TODO check
+    gdb.set_stall_timeout(guild, timeout)
