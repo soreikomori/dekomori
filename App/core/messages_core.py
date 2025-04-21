@@ -43,4 +43,8 @@ class commands:
                 "off": lambda: "**DM On Kick Turned __Off__:** No more DMs for stallers! They'll be _deathly_ kicked without warning!",
             },
         },
+        "delwm": {
+            "on": lambda: "**Delete Welcome Messages Turned __On__:** I'll delete the welcome messages for users who took the bait!",
+            "off": lambda: "**Delete Welcome Messages Turned __Off__:** I'll let the welcome messages be!",
+        },
     }
