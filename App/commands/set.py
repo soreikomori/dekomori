@@ -41,4 +41,4 @@ async def logchannel(ctx, channel: discord.TextChannel):
         await ctx.send(msg.commands.set["logchannel"]["no_perms"]())
         guildLogger.error(f"{ctx.author.name} tried to set the log channel to a channel Dekomori can't send messages in.")
     guildLogger.info(f"{ctx.author.name} set the log channel to {channel.mention}.")
-    await ctx.send(msg.commands.set["logchannel"](channel.mention))
+    await ctx.send(msg.commands.set["logchannel"]["valid"](channel.mention))
