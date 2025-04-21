@@ -48,3 +48,30 @@ def format_command_list(commands):
     if len(commands) > 1:
         return f"`{', '.join(commands[:-1])}` and `{commands[-1]}`"
     return f"`{commands[0]}`"
+
+def parse_time(seconds):
+    """
+    Parse a duration in seconds into a human-readable format.
+
+    Parameters
+    ----------
+    seconds : int
+        The duration in seconds.
+
+    Returns
+    -------
+    str
+        The parsed duration in a human-readable format.
+    """
+    # TODO Check this
+    if seconds < 60:
+        return f"{seconds} second{'s' if seconds != 1 else ''}"
+    elif seconds < 3600:
+        minutes = seconds // 60
+        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+    elif seconds < 86400:
+        hours = seconds // 3600
+        return f"{hours} hour{'s' if hours != 1 else ''}"
+    else:
+        days = seconds // 86400
+        return f"{days} day{'s' if days != 1 else ''}"
