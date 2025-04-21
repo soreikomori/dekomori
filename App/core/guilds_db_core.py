@@ -188,6 +188,20 @@ def set_log_channel(guild: discord.Guild, channel: discord.TextChannel):
     guildId = str(guild.id)
     update_value(guildId, "log_channel_id", channel.id)
 
+def set_stall_timer(guild: discord.Guild, timeout: int):
+    """
+    Sets the stall timeout for a specific guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to set the stall timeout for.
+    timeout : int
+        The timeout duration in seconds.
+    """
+    guildId = str(guild.id)
+    update_value(guildId, "stall_timeout", timeout)
+
 # endregion # Miscellaneous
 
 # region # Rejoin Checker Related
