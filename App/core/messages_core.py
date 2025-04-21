@@ -9,11 +9,11 @@ from App.dekomori import client
 from App.utils.constants import get_commands_list as get_commands
 from App.utils import formatting as fmt
 
-commands = get_commands(client)
+commandList = get_commands(client)
 
 class commands:
     baitrole = {
-        "no_args": lambda: f"Hey, what exactly do you want me to do? There's {fmt.format_command_list(commands['baitrole'])}!",
+        "no_args": lambda: f"Hey, what exactly do you want me to do? There's {fmt.format_command_list(commandList['baitrole'])}!",
         "add": {
             "tried_adding_all": lambda: "Hey, you can't add all roles to the bait roles list!",
             "valid": lambda roles: f"I added {', '.join(roles)} to the bait roles list!",
@@ -28,7 +28,7 @@ class commands:
         },
     },
     toggle = {
-        "no_args": lambda: f"Hey, what exactly do you want me to toggle? There's {fmt.format_command_list(commands['toggle'])}!",
+        "no_args": lambda: f"Hey, what exactly do you want me to toggle? There's {fmt.format_command_list(commandList['toggle'])}!",
         "dm": {
             "kick": {
                 "on": lambda: "**DM On Kick Turned __On__:** I'll have some _deathly_ mercy on my enemies and DM them before I kick them!",
