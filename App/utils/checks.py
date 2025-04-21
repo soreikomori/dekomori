@@ -300,3 +300,29 @@ class rejoin_checker:
             return wrapper
         return decorator
     
+    @staticmethod
+    def action_is_ban(guild):
+        """
+        Checks if the action for the rejoin checker is set to ban.
+        It assumes that the first argument is the guild object.
+        
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object.
+            
+        Returns
+        -------
+        function
+            The decorator function.
+        """
+        def decorator(func):
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                guild = args[0]
+                banning = gdb.get_value(guild.id, "ban")
+                if banning:
+                    raise ex.ActionIsBanError("Dekomori is set to ban users with bait roles, which conflicts with the rejoin checker.")
+                return await func(*args, **kwargs)
+            return wrapper
+        return decorator
