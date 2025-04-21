@@ -13,7 +13,7 @@ commands = get_commands(client)
 
 class commands:
     baitrole = {
-        "no_args": lambda: "Hey, what exactly do you want me to do? There's `add` and `remove`!",
+        "no_args": lambda: f"Hey, what exactly do you want me to do? There's {fmt.format_command_list(commands['baitrole'])}!",
         "add": {
             "tried_adding_all": lambda: "Hey, you can't add all roles to the bait roles list!",
             "valid": lambda roles: f"I added {', '.join(roles)} to the bait roles list!",
