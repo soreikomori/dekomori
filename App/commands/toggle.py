@@ -50,3 +50,16 @@ async def delwm(ctx):
     state = "on" if newValue else "off"
     guildLogger.info(f"{ctx.author.name} turned {state} deletion of welcome messages.")
     await ctx.send(msg.commands.toggle["delwm"][state]())
+
+@toggle.command(aliases=["ban", "kick"], brief="Toggle between banning and kicking users with bait roles.")
+@commands.has_permissions(manage_roles=True)
+async def action(ctx):
+    """Toggle between banning and kicking users with bait roles. By default, Dekomori will kick users with bait roles. You can check its status with d!config.
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    newState, rjcTurnedOff = tgl.toggle_action(ctx.guild.id)
+    guildLogger.info(f"{ctx.author.name} toggled action to {newState}.")
+    await ctx.send(msg.commands.toggle["action"][newState]())
+    if rjcTurnedOff:
+        guildLogger.warning("As the action was changed to ban, the rejoin checker has been disabled.")
+        await ctx.send(msg.commands.toggle["action"]["rjc_off"]())
