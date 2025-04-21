@@ -158,6 +158,11 @@ def toggle(guild: discord.Guild, key: str):
         The guild object to toggle.
     key : str
         The key to toggle. The key must have a boolean value, for example "paused" or "dm_on_kick".
+
+    Returns
+    -------
+    bool
+        The new value of the toggled key.
     """
     guildId = str(guild.id)
     currentVal = get_value(guildId, key)
@@ -165,6 +170,7 @@ def toggle(guild: discord.Guild, key: str):
         newVal = not currentVal
         update_value(guildId, key, newVal)
         globalLogger.debug(f"Toggled {key} to {newVal} in guild {guild.name} ({guildId}).")
+        return newVal
     else:
         raise ValueError(f"Key '{key}' is not toggleable (it's not a boolean or doesn't exist).")
 
