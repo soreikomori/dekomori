@@ -18,8 +18,7 @@ def toggle_dm(guild, action):
     guild : int
         The ID of the guild.
     action : str
-        The action to be performed. Can be either "kick", "ban", or "stall".
+        The action to be performed. Can be either "kick", "ban", or "kos".
     """
-    action = "kos" if action == "stall" else action
     key = f"dm_on_{action}"
-    gdb.toggle(guild, key)
+    return gdb.toggle(guild, key)
