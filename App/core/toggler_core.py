@@ -92,3 +92,14 @@ def toggle_rejoin_checker(guild):
         The ID of the guild.
     """
     return gdb.rjc.toggle(guild)
+
+def toggle_rejoin_checker_kick(guild):
+    """
+    Toggle the rejoin checker kick action for a specific guild.
+
+    Parameters
+    ----------
+    guild : int
+        The ID of the guild.
+    """
+    return gdb.rjc.toggle_kick(guild)
