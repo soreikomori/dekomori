@@ -42,6 +42,31 @@ def requires_permission(permission: str):
         return wrapper
     return decorator
 
+def can_message_channel(channel):
+    """
+    Checks if the bot can send messages to the specified channel.
+    It assumes that the first argument is the channel object.
+
+    Parameters
+    ----------
+    channel : discord.TextChannel
+        The channel object.
+
+    Returns
+    -------
+    function
+        The decorator function.
+    """
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            channel = args[0]
+            if not channel.permissions_for(channel.guild.me).send_messages:
+                raise PermissionError("Dekomori cannot send messages to the channel.")
+            return await func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 def can_message_log_channel(guild):
     """
     Checks if the bot can send messages to the designated log channel.
