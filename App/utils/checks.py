@@ -86,12 +86,13 @@ def can_message_log_channel(guild):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             guild = args[0]
-            logChannelObj = lcsend.get_log_channel(guild)
-            if not logChannelObj.permissions_for(guild.me).send_messages:
-                guildLogger = logger.get_guild_logger(guild.id)
-                guildLogger.critical("Dekomori cannot send messages to the log channel.")
-                raise PermissionError("Log channel is not available.")
-            return await func(*args, **kwargs)
+            log_channel_id = gdb.get_value(guild.id, "log_channel_id")
+            if log_channel_id == 0:
+                raise ex.NoLogChannelError("No log channel set for the guild.")
+            log_channel = guild.get_channel(log_channel_id)
+            if log_channel is None:
+                raise ex.NoLogChannelError("Log channel does not exist.")
+            return await can_message_channel(log_channel)(func)(*args, **kwargs)
         return wrapper
     return decorator
 
