@@ -214,21 +214,6 @@ class rjc:
         update_value(guildId, "rejoin_checker", rjc)
 
     @staticmethod
-    def enable(guild: discord.Guild):
-        """
-        Enables the rejoin checker for a specific guild.
-
-        Parameters
-        ----------
-        guild : discord.Guild
-            The guild object to enable the rejoin checker for.
-        """
-        guildId = str(guild.id)
-        rjc = get_value(guildId, "rejoin_checker")
-        rjc["enabled"] = True
-        update_value(guildId, "rejoin_checker", rjc)
-
-    @staticmethod
     def has_ping_role(guild: discord.Guild):
         """
         Checks if the guild has a ping role set for the rejoin checker.
