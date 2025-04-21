@@ -30,3 +30,7 @@ class RejoinCheckerError(Exception):
     """Base class for rejoin checker-related exceptions."""
     pass
 
+class NoPingRoleError(RejoinCheckerError):
+    """Raised when the Rejoin Checker has no ping role set and any attempt is made to enable it."""
+    pass
+
