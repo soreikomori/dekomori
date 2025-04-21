@@ -109,4 +109,11 @@ class commands:
             "off": lambda: "**Rejoin Checker Kick Turned __Off__:** I'll spare some _deathly_ mercy and just ping the role, but the user will stay!",
             "rjc_was_off": lambda: f"**NOTE**: The Rejoin Checker is still disabled even if you turn this on! Use `d!toggle rjc` or {slash('toggle rjc')} to enable it!",
         },
-    }
+    },
+    set = {
+        "no_args": lambda: f"What do you want to set? You can set a {fmt.format_command_list(commandList['set'])}!",
+        "log_channel": {
+            "valid": lambda channel: f"**Log Channel Set:** I'll write the names of slain enemies in {channel.mention}!",
+            "no_perms": lambda: "I can't send messages in that channel! Please make sure I have the necessary permissions.",
+        },
+    },
