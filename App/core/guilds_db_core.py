@@ -177,6 +177,13 @@ def toggle(guild: discord.Guild, key: str):
 
 # endregion # Miscellaneous
 
+# region # Rejoin Checker Related
+
+class rjc:
+    @staticmethod
+
+# endregion # Rejoin Checker Related
+
 # region # Watchlist Related
 
 @checks.member_join_fullcheck()
