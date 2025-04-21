@@ -25,3 +25,8 @@ class AddAllRolesError(BaitRoleError):
 class InvalidRoleError(BaitRoleError):
     """Raised when a role is invalid or doesn't exist."""
     pass
+
+class RejoinCheckerError(Exception):
+    """Base class for rejoin checker-related exceptions."""
+    pass
+
