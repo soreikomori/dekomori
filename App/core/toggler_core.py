@@ -55,3 +55,14 @@ def toggle_action(guild):
         gdb.rjc.disable(guild)
         rjcTurnedOff = True
     return newState, rjcTurnedOff
+
+def toggle_kos(guild):
+    """
+    Toggle the kick on stall action for a specific guild.
+
+    Parameters
+    ----------
+    guild : int
+        The ID of the guild.
+    """
+    return gdb.toggle(guild, "kick_on_stall")
