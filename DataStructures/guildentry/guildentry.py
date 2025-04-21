@@ -40,7 +40,7 @@ def new_guildentry(guildId, guildName):
             "join_ount": 0,
             "max_join_count": 0,
             "ping_role_id": 0,
-            "kickuser": True
+            "kick_user": True
         },
         "ban": False,
         "log_channel_id": 0,
