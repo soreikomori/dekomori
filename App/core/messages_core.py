@@ -56,4 +56,8 @@ class commands:
             "on": lambda: "**Kick on Stall Turned __On__:** I'll kick users who stall in the onboarding process!",
             "off": lambda: "**Kick on Stall Turned __Off__:** I'll just leave users who stall be, then!"
         },
+        "kick_spf": {
+            "on": lambda: "**Flagged Spammer Kick Turned __On__:** Got it! I'll keep an eye out for _deathly_ spammers!",
+            "off": lambda: "**Flagged Spammer Kick Turned __Off__:** Okay, no more _deathly_ spammer checks!",
+        },
     }
