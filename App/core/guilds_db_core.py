@@ -233,6 +233,27 @@ class rjc:
         rjc["enabled"] = not rjc["enabled"]
         update_value(guildId, "rejoin_checker", rjc)
         return rjc["enabled"]
+    
+    @staticmethod
+    def toggle_kick(guild: discord.Guild):
+        """
+        Toggles the kick action for the rejoin checker in a specific guild.
+
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object to toggle the kick action for.
+
+        Returns
+        -------
+        bool
+            The new state of the kick action.
+        """
+        guildId = str(guild.id)
+        rjc = get_value(guildId, "rejoin_checker")
+        rjc["kick_user"] = not rjc["kick_user"]
+        update_value(guildId, "rejoin_checker", rjc)
+        return rjc["kick_user"]
 
     @staticmethod
     def has_ping_role(guild: discord.Guild):
