@@ -16,8 +16,8 @@ def toggle_dm(guild, action):
 
     Parameters
     ----------
-    guild : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object.
     action : str
         The action to be performed. Can be either "kick", "ban", or "kos".
     """
@@ -30,8 +30,8 @@ def toggle_delete_wm(guild):
 
     Parameters
     ----------
-    guild : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object.
     """
     return gdb.toggle(guild, "delete_welcome_message")
 
@@ -41,8 +41,8 @@ def toggle_action(guild):
 
     Parameters
     ----------
-    guild : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object.
 
     Returns
     -------
@@ -63,8 +63,8 @@ def toggle_kos(guild):
 
     Parameters
     ----------
-    guild : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object.
     """
     return gdb.toggle(guild, "kick_on_stall")
 
@@ -74,8 +74,8 @@ def toggle_spamflagged(guild):
 
     Parameters
     ----------
-    guild : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object.
     """
     return gdb.toggle(guild, "kick_spamflagged")
 
@@ -88,8 +88,8 @@ def toggle_rejoin_checker(guild):
 
     Parameters
     ----------
-    guild : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object.
     """
     return gdb.rjc.toggle(guild)
 
@@ -99,7 +99,7 @@ def toggle_rejoin_checker_kick(guild):
 
     Parameters
     ----------
-    guild : int
-        The ID of the guild.
+    guild : discord.Guild
+        The guild object.
     """
     return gdb.rjc.toggle_kick(guild)
