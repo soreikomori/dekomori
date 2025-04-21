@@ -273,3 +273,30 @@ class rejoin_checker:
             return wrapper
         return decorator
     
+    @staticmethod
+    def has_max_join_count(guild):
+        """
+        Checks if the guild has a max join count set for the rejoin checker.
+        It assumes that the first argument is the guild object.
+        
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object.
+            
+        Returns
+        -------
+        function
+            The decorator function.
+        """
+        def decorator(func):
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                guild = args[0]
+                max_join_count = gdb.rjc.get_max_join_count(guild)
+                if max_join_count == 0:
+                    raise ex.NoMaxJoinCount("No max join count set for the rejoin checker.")
+                return await func(*args, **kwargs)
+            return wrapper
+        return decorator
+    
