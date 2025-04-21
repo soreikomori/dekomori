@@ -198,6 +198,20 @@ class rjc:
         guildId = str(guild.id)
         return get_value(guildId, "rejoin_checker")["enabled"] == True
     
+    @staticmethod
+    def disable(guild: discord.Guild):
+        """
+        Disables the rejoin checker for a specific guild.
+
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object to disable the rejoin checker for.
+        """
+        guildId = str(guild.id)
+        rjc = get_value(guildId, "rejoin_checker")
+        rjc["enabled"] = False
+        update_value(guildId, "rejoin_checker", rjc)
 
 # endregion # Rejoin Checker Related
 
