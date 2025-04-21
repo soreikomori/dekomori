@@ -74,3 +74,14 @@ async def kickonstall(ctx):
     state = "on" if newValue else "off"
     guildLogger.info(f"{ctx.author.name} turned {state} kick on stall.")
     await ctx.send(msg.commands.toggle["kos"][state]())
+
+@toggle.command(aliases=["sp"], brief="Toggle the spammer checker.")
+@commands.has_permissions(manage_roles=True)
+async def spammers(ctx):
+    """Toggle the spammer checker. If enabled, Dekomori will take action against users who are flagged by Discord as spammers. You can check its status with d!config.
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    newValue = tgl.toggle_spamflagged(ctx.guild.id)
+    state = "on" if newValue else "off"
+    guildLogger.info(f"{ctx.author.name} turned {state} the spamflagged (flagged users) kick.")
+    await ctx.send(msg.commands.toggle["kick_spf"][state]())
