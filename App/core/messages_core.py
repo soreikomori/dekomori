@@ -51,5 +51,9 @@ class commands:
             "ban": lambda: "**Action Set To __Banning__:** They shall be banned and face **DEATH** itself!",
             "kick": lambda: "**Action Set To __Kicking__:** I'll spare them from **DEATH** and just kick them away!",
             "rjc_off": lambda: "**Rejoin Checker Turned __Off__:** I've also turned off the Rejoin Checker, as it only works when kicking!"
-        }
+        },
+        "kos": {
+            "on": lambda: "**Kick on Stall Turned __On__:** I'll kick users who stall in the onboarding process!",
+            "off": lambda: "**Kick on Stall Turned __Off__:** I'll just leave users who stall be, then!"
+        },
     }
