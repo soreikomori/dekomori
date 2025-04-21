@@ -164,7 +164,7 @@ def toggle(guild: discord.Guild, key: str):
     if currentVal is not None and isinstance(currentVal, bool):
         newVal = not currentVal
         update_value(guildId, key, newVal)
-        globalLogger.info(f"Toggled {key} to {newVal} in guild {guild.name} ({guildId}).")
+        globalLogger.debug(f"Toggled {key} to {newVal} in guild {guild.name} ({guildId}).")
     else:
         raise ValueError(f"Key '{key}' is not toggleable (it's not a boolean or doesn't exist).")
 
