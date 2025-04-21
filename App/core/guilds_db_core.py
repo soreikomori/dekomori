@@ -148,6 +148,27 @@ def is_paused(guild: discord.Guild):
     guildId = str(guild.id)
     return get_value(guildId, "paused") == True
 
+def toggle(guild: discord.Guild, key: str):
+    """
+    Toggles the paused state of Dekomori in a specific guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to toggle.
+    key : str
+        The key to toggle. The key must have a boolean value, for example "paused" or "dm_on_kick".
+    """
+    guildId = str(guild.id)
+    currentVal = get_value(guildId, key)
+    if currentVal is not None and isinstance(currentVal, bool):
+        newVal = not currentVal
+        update_value(guildId, key, newVal)
+        globalLogger.info(f"Toggled {key} to {newVal} in guild {guild.name} ({guildId}).")
+    else:
+        raise ValueError(f"Key '{key}' is not toggleable (it's not a boolean or doesn't exist).")
+
+
 # endregion # Miscellaneous
 
 # region # Watchlist Related
