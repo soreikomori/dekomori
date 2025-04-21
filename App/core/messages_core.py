@@ -6,10 +6,27 @@ def nokos_stall(memberMention, memberName, parsedDuration):
     return f"**Stall Kick:** {memberMention} ({memberName}) joined earlier, but didn't complete onboarding in {parsedDuration}. They have _NOT_ been kicked, okay!?"
 
 from App.dekomori import client
-from App.utils.constants import get_commands_list as get_commands
+from App.utils.constants import get_commands_list
+from App.utils.constants import get_cog_ids
 from App.utils import formatting as fmt
 
-commandList = get_commands(client)
+commandList = get_commands_list(client)
+cogIds = get_cog_ids(client)
+
+def cog_id(cogName):
+    """Returns the cog ID for a given cog name.
+
+    Parameters
+    ----------
+    cogName : str
+        The name of the cog.
+
+    Returns
+    -------
+    int
+        The cog ID for the given cog name.
+    """
+    return cogIds.get(cogName, None)
 
 class commands:
     baitrole = {
