@@ -228,6 +228,25 @@ class rjc:
         rjc["enabled"] = True
         update_value(guildId, "rejoin_checker", rjc)
 
+    @staticmethod
+    def has_ping_role(guild: discord.Guild):
+        """
+        Checks if the guild has a ping role set for the rejoin checker.
+
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object to check.
+
+        Returns
+        -------
+        bool
+            True if a ping role is set, False otherwise.
+        """
+        guildId = str(guild.id)
+        ping_roles = get_value(guildId, "rejoin_checker")["ping_role_id"]
+        return ping_roles != 0
+    
 # endregion # Rejoin Checker Related
 
 # region # Watchlist Related
