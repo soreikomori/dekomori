@@ -85,3 +85,28 @@ async def spammers(ctx):
     state = "on" if newValue else "off"
     guildLogger.info(f"{ctx.author.name} turned {state} the spamflagged (flagged users) kick.")
     await ctx.send(msg.commands.toggle["kick_spf"][state]())
+
+    
+@toggle.command(aliases=["rc", "rejoin", "rjc"], brief="Toggle the rejoin checker.")
+@commands.has_permissions(manage_roles=True)
+async def rejoinchecker(ctx):
+    """Toggle the rejoin checker. This feature will notify a role when a user repeatedly rejoins the server.
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    try:
+        newValue = tgl.toggle_rejoin_checker(ctx.guild.id)
+    except ex.NoPingRoleError:
+        guildLogger.error(f"{ctx.author.name} tried to toggle the rejoin checker without a ping role.")
+        await ctx.send(msg.commands.toggle["rjc"]["no_ping_role"]())
+        return
+    except ex.NoMaxJoinCountError:
+        guildLogger.error(f"{ctx.author.name} tried to toggle the rejoin checker without a max join count.")
+        await ctx.send(msg.commands.toggle["rjc"]["no_max_join_count"]())
+        return
+    except ex.ActionIsBanError:
+        guildLogger.error(f"{ctx.author.name} tried to toggle the rejoin checker when the action is set to ban.")
+        await ctx.send(msg.commands.toggle["rjc"]["action_is_ban"]())
+        return
+    state = "on" if newValue else "off"
+    guildLogger.info(f"{ctx.author.name} turned {state} the rejoin checker.")
+    await ctx.send(msg.commands.toggle["rjc"][state]())
