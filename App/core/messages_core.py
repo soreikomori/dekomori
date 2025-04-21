@@ -28,6 +28,26 @@ def cog_id(cogName):
     """
     return cogIds.get(cogName, None)
 
+def slash(commandName):
+    """Returns the slash command for a given command name.
+
+    Parameters
+    ----------
+    commandName : str
+        The name of the command.
+
+    Returns
+    -------
+    str
+        The slash command for the given command name.
+    """
+    if " " in commandName:
+        cogName = commandName.split(" ")[0]
+        commandName = commandName.split(" ")[1]
+        return f"</{cogName} {commandName}:{cog_id(cogName)}>"
+    else:
+        return f"</{commandName}:{cog_id(commandName)}>"
+
 class commands:
     baitrole = {
         "no_args": lambda: f"Hey, what exactly do you want me to do? There's {fmt.format_command_list(commandList['baitrole'])}!",
