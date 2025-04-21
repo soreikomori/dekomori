@@ -47,4 +47,9 @@ class commands:
             "on": lambda: "**Delete Welcome Messages Turned __On__:** I'll delete the welcome messages for users who took the bait!",
             "off": lambda: "**Delete Welcome Messages Turned __Off__:** I'll let the welcome messages be!",
         },
+        "action": {
+            "ban": lambda: "**Action Set To __Banning__:** They shall be banned and face **DEATH** itself!",
+            "kick": lambda: "**Action Set To __Kicking__:** I'll spare them from **DEATH** and just kick them away!",
+            "rjc_off": lambda: "**Rejoin Checker Turned __Off__:** I've also turned off the Rejoin Checker, as it only works when kicking!"
+        }
     }
