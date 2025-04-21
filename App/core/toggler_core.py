@@ -22,3 +22,14 @@ def toggle_dm(guild, action):
     """
     key = f"dm_on_{action}"
     return gdb.toggle(guild, key)
+
+def toggle_delete_wm(guild):
+    """
+    Toggle the deletion of welcome messages for a specific guild.
+
+    Parameters
+    ----------
+    guild : int
+        The ID of the guild.
+    """
+    return gdb.toggle(guild, "delete_welcome_message")
