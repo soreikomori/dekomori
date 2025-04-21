@@ -9,6 +9,7 @@ from App.utils.constants import VERSION
 from functools import wraps
 
 from App.utils import logger as logger
+from App.utils import exceptions as ex
 from App.core import log_channel_sender_core as lcsend
 from App.core import guilds_db_core as gdb
 
