@@ -247,6 +247,24 @@ class rjc:
         ping_roles = get_value(guildId, "rejoin_checker")["ping_role_id"]
         return ping_roles != 0
     
+    @staticmethod
+    def get_max_join_count(guild: discord.Guild):
+        """
+        Retrieves the maximum join count for the rejoin checker in a specific guild.
+
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object to check.
+
+        Returns
+        -------
+        int
+            The maximum join count.
+        """
+        guildId = str(guild.id)
+        return get_value(guildId, "rejoin_checker")["max_join_count"]
+
 # endregion # Rejoin Checker Related
 
 # region # Watchlist Related
