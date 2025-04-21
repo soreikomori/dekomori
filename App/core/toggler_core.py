@@ -33,3 +33,25 @@ def toggle_delete_wm(guild):
         The ID of the guild.
     """
     return gdb.toggle(guild, "delete_welcome_message")
+
+def toggle_action(guild):
+    """
+    Toggle the action (kick or ban) for a specific guild.
+
+    Parameters
+    ----------
+    guild : int
+        The ID of the guild.
+
+    Returns
+    -------
+    bool, bool
+        A tuple containing the new state of the action and whether the rejoin checker was turned off.
+    """
+    newState = gdb.toggle(guild, "ban") # newState True = ban, False = kick
+    rjcActive = gdb.rjc.is_enabled(guild)
+    rjcTurnedOff = False
+    if newState and rjcActive:
+        gdb.rjc.disable(guild)
+        rjcTurnedOff = True
+    return newState, rjcTurnedOff
