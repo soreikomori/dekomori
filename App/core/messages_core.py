@@ -104,4 +104,9 @@ class commands:
             "no_max_join_count": lambda: f"You need to set the maximum number of joins first! Use `d!rejoinchecker setmax` or {slash('rejoinchecker setmax')}.",
             "action_is_ban": lambda: f"The Rejoin Checker only works if I'm kicking users, not banning them! Use `d!toggle action` or {slash('toggle action')} to change it!",
         },
+        "rjc_kick": {
+            "on": lambda: "**Rejoin Checker Kick Turned __On__:** I'll kick users who try to rejoin the server multiple times in a row!",
+            "off": lambda: "**Rejoin Checker Kick Turned __Off__:** I'll spare some _deathly_ mercy and just ping the role, but the user will stay!",
+            "rjc_was_off": lambda: f"**NOTE**: The Rejoin Checker is still disabled even if you turn this on! Use `d!toggle rjc` or {slash('toggle rjc')} to enable it!",
+        },
     }
