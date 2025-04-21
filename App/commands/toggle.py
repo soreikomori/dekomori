@@ -110,3 +110,17 @@ async def rejoinchecker(ctx):
     state = "on" if newValue else "off"
     guildLogger.info(f"{ctx.author.name} turned {state} the rejoin checker.")
     await ctx.send(msg.commands.toggle["rjc"][state]())
+
+@toggle.command(aliases=["rjckick", "rjck"], brief="Toggle the rejoin checker kicking users.")
+@commands.has_permissions(manage_roles=True)
+async def rejoincheckerkick(ctx):
+    """Toggle the rejoin checker kicking users. If enabled, Dekomori will kick users who repeatedly rejoin the server. You can check its status with d!config.
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    newValue, rjcOff = tgl.toggle_rjc_kick(ctx.guild.id)
+    state = "on" if newValue else "off"
+    guildLogger.info(f"{ctx.author.name} turned {state} the rejoin checker kicking users.")
+    await ctx.send(msg.commands.toggle["rjc_kick"][state]())
+    if rjcOff:
+        guildLogger.info("Despite the rejoin checker kick being turned on, the rejoin checker was already disabled and will remain so.")
+        await ctx.send(msg.commands.toggle["rjc_kick"]["rjc_was_off"]())
