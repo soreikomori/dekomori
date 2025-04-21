@@ -11,6 +11,7 @@ from typing import Literal
 from discord import app_commands
 from discord.ext import commands
 from App.core import messages_core as msg
+from App.core import set_core as sc
 from App.utils import logger as logger
 
 @client.hybrid_group(brief="Set various configurations for Dekomori.")
@@ -22,3 +23,22 @@ async def set(ctx):
     guildLogger = logger.getLogger(str(ctx.guild.id))
     await ctx.send(msg.commands.set["no_args"]())
     guildLogger.error(f"{ctx.author.name} didn't specify any arguments for set.")
+
+@set.command(aliases=["logchan", "setlogchannel", "setlogchan"], brief="Set the log channel for Dekomori.")
+@commands.has_permissions(manage_roles=True)
+async def logchannel(ctx, channel: discord.TextChannel):
+    """Set the channel where Dekomori will log the actions taken. You can check the current one with d!config.
+    
+    Parameters
+    ----------
+    channel : str
+        The channel to be set as the log channel. Can be a mention or an ID.
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    try:
+        sc.set_log_channel(ctx.guild, channel)
+    except PermissionError:
+        await ctx.send(msg.commands.set["logchannel"]["no_perms"]())
+        guildLogger.error(f"{ctx.author.name} tried to set the log channel to a channel Dekomori can't send messages in.")
+    guildLogger.info(f"{ctx.author.name} set the log channel to {channel.mention}.")
+    await ctx.send(msg.commands.set["logchannel"](channel.mention))
