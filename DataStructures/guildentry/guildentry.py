@@ -36,10 +36,10 @@ def new_guildentry(guildId, guildName):
         "kick_spamflagged": False,
         "rejoin_checker": {
             "enabled": False,
-            "userId": 0,
-            "joinCount": 0,
-            "maxJoinCount": 0,
-            "pingRoleId": 0,
+            "user_id": 0,
+            "join_ount": 0,
+            "max_join_count": 0,
+            "ping_role_id": 0,
             "kickuser": True
         },
         "ban": False,
