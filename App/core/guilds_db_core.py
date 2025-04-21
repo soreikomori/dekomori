@@ -174,6 +174,19 @@ def toggle(guild: discord.Guild, key: str):
     else:
         raise ValueError(f"Key '{key}' is not toggleable (it's not a boolean or doesn't exist).")
 
+def set_log_channel(guild: discord.Guild, channel: discord.TextChannel):
+    """
+    Sets the log channel for a specific guild.
+
+    Parameters
+    ----------
+    guild : discord.Guild
+        The guild object to set the log channel for.
+    channel : discord.TextChannel
+        The text channel object to set as the log channel.
+    """
+    guildId = str(guild.id)
+    update_value(guildId, "log_channel_id", channel.id)
 
 # endregion # Miscellaneous
 
