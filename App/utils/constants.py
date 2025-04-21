@@ -1,7 +1,9 @@
 # usr/bin/env python3
 # -*- coding: utf-8 -*-
 from App.dekomori import client
-
+import os
+import discord
+import json
 VERSION = "Beta 2.0.0"
 
 def get_commands_list(client):
@@ -45,3 +47,16 @@ async def update_command_ids(client: discord.Client):
     with open(commandIdsPath, "w") as f:
         json.dump(command_ids, f, indent=4)
 
+def get_command_ids():
+    """
+    Reads command IDs from command_ids.json.
+
+    Returns
+    -------
+    dict
+        A dictionary containing command names and their respective IDs.
+    """
+    if not os.path.exists(commandIdsPath):
+        raise FileNotFoundError(f"Command IDs file not found: {commandIdsPath}")
+    with open(commandIdsPath, "r") as f:
+        return json.load(f)
