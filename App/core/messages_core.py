@@ -97,4 +97,11 @@ class commands:
             "on": lambda: "**Flagged Spammer Kick Turned __On__:** Got it! I'll keep an eye out for _deathly_ spammers!",
             "off": lambda: "**Flagged Spammer Kick Turned __Off__:** Okay, no more _deathly_ spammer checks!",
         },
+        "rjc": {
+            "on": lambda: "**Rejoin Checker Turned __On__:** I'll notify the role when someone tries to rejoin the server multiple times in a row!",
+            "off": lambda: "**Rejoin Checker Turned __Off__:** No more notifications, only **DEATH**!",
+            "no_ping_role": lambda: f"You need to set a role to ping first! Use `d!rejoinchecker pingrole` or {slash('rejoinchecker pingrole')}.",
+            "no_max_join_count": lambda: f"You need to set the maximum number of joins first! Use `d!rejoinchecker setmax` or {slash('rejoinchecker setmax')}.",
+            "action_is_ban": lambda: f"The Rejoin Checker only works if I'm kicking users, not banning them! Use `d!toggle action` or {slash('toggle action')} to change it!",
+        },
     }
