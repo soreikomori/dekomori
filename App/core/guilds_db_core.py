@@ -181,6 +181,23 @@ def toggle(guild: discord.Guild, key: str):
 
 class rjc:
     @staticmethod
+    def is_enabled(guild: discord.Guild):
+        """
+        Checks if the rejoin checker is enabled for a specific guild.
+
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object to check.
+
+        Returns
+        -------
+        bool
+            True if the rejoin checker is enabled, False otherwise.
+        """
+        guildId = str(guild.id)
+        return get_value(guildId, "rejoin_checker")["enabled"] == True
+    
 
 # endregion # Rejoin Checker Related
 
