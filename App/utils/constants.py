@@ -29,11 +29,11 @@ def get_commands_list(client):
                 commands[command.name].append(cog_name)
     return commands
 
-commandIdsPath = '../../env/command_ids.json'
+cogIdsPath = '../../env/cog_ids.json'
 
-async def update_command_ids(client: discord.Client):
+async def update_cog_ids(client: discord.Client):
     """
-    Fetches all application commands and writes their names and IDs to command_ids.json.
+    Fetches all application commands (cogs) and writes their names and IDs to cog_ids.json.
 
     Parameters
     ----------
@@ -44,19 +44,19 @@ async def update_command_ids(client: discord.Client):
     command_ids = {}
     for command in app_commands:
         command_ids[command.name] = command.id
-    with open(commandIdsPath, "w") as f:
+    with open(cogIdsPath, "w") as f:
         json.dump(command_ids, f, indent=4)
 
-def get_command_ids():
+def get_cog_ids():
     """
-    Reads command IDs from command_ids.json.
+    Reads cog IDs from cog_ids.json.
 
     Returns
     -------
     dict
         A dictionary containing command names and their respective IDs.
     """
-    if not os.path.exists(commandIdsPath):
-        raise FileNotFoundError(f"Command IDs file not found: {commandIdsPath}")
-    with open(commandIdsPath, "r") as f:
+    if not os.path.exists(cogIdsPath):
+        raise FileNotFoundError(f"Command IDs file not found: {cogIdsPath}")
+    with open(cogIdsPath, "r") as f:
         return json.load(f)
