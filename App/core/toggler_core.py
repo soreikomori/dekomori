@@ -66,3 +66,14 @@ def toggle_kos(guild):
         The ID of the guild.
     """
     return gdb.toggle(guild, "kick_on_stall")
+
+def toggle_spamflagged(guild):
+    """
+    Toggle the spam flagged action for a specific guild.
+
+    Parameters
+    ----------
+    guild : int
+        The ID of the guild.
+    """
+    return gdb.toggle(guild, "kick_spamflagged")
