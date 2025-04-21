@@ -242,3 +242,7 @@ def onboarding_enabled(guild, member):
             return await func(*args, **kwargs)
         return wrapper
     return decorator
+
+# Rejoin Checker Checks
+
+class rejoin_checker:
