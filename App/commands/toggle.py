@@ -39,3 +39,14 @@ async def dm(ctx, action:Literal["kick", "ban", "stall"]):
     state = "on" if newValue else "off"
     guildLogger.info(f"{ctx.author.name} turned {state} DM on {action}.")
     await ctx.send(msg.commands.toggle["dm"][action][state]())
+
+@toggle.command(aliases=["wm", "wmdel", "welcomemessage", "deletewelcomemessage"], brief="Toggle deletion of welcome messages.")
+@commands.has_permissions(manage_guild=True)
+async def delwm(ctx):
+    """Toggle deletion of welcome messages. If enabled, Dekomori will delete the default welcome message for new users. You can check its status with d!config.
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    newValue = tgl.toggle_delete_wm(ctx.guild.id)
+    state = "on" if newValue else "off"
+    guildLogger.info(f"{ctx.author.name} turned {state} deletion of welcome messages.")
+    await ctx.send(msg.commands.toggle["delwm"][state]())
