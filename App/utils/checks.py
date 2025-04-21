@@ -246,3 +246,30 @@ def onboarding_enabled(guild, member):
 # Rejoin Checker Checks
 
 class rejoin_checker:
+    @staticmethod
+    def has_ping_roles(guild):
+        """
+        Checks if the guild has ping roles set for the rejoin checker.
+        It assumes that the first argument is the guild object.
+        
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild object.
+            
+        Returns
+        -------
+        function
+            The decorator function.
+        """
+        def decorator(func):
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                guild = args[0]
+                ping_roles = gdb.rjc.has_ping_role(guild)
+                if ping_roles == 0:
+                    raise ex.NoPingRoleError("No ping roles set for the rejoin checker.")
+                return await func(*args, **kwargs)
+            return wrapper
+        return decorator
+    
