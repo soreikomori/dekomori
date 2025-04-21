@@ -63,3 +63,14 @@ async def action(ctx):
     if rjcTurnedOff:
         guildLogger.warning("As the action was changed to ban, the rejoin checker has been disabled.")
         await ctx.send(msg.commands.toggle["action"]["rjc_off"]())
+
+@toggle.command(aliases=["kos", "stallkick"], brief="Toggle kicking on stall.")
+@commands.has_permissions(manage_roles=True)
+async def kickonstall(ctx):
+    """Toggle kicking on stall. If enabled, Dekomori will kick users who stall in the onboarding process. You can check its status with d!config.
+    """
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    newValue = tgl.toggle_kos(ctx.guild.id)
+    state = "on" if newValue else "off"
+    guildLogger.info(f"{ctx.author.name} turned {state} kick on stall.")
+    await ctx.send(msg.commands.toggle["kos"][state]())
