@@ -23,3 +23,19 @@ async def toggle(ctx):
     await ctx.send(msg.commands.toggle["no_args"]())
     guildLogger.error(f"{ctx.author.name} didn't specify any arguments for toggle.")
 
+@toggle.command(aliases=["dmuser"], brief="Toggle DMs on detection of bait roles.")
+@commands.has_permissions(manage_roles=True)
+async def dm(ctx, action:Literal["kick", "ban", "stall"]):
+    """Toggle DMs on detection of bait roles. If enabled, Dekomori will DM the user before taking action. You can check its status with d!config.
+
+    Parameters
+    ----------
+    action : str
+        The action to be performed. Can be either "kick", "ban", or "stall".
+    """
+    action = "kos" if action == "stall" else action
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    newValue = tgl.toggle_dm(ctx.guild.id, action)
+    state = "on" if newValue else "off"
+    guildLogger.info(f"{ctx.author.name} turned {state} DM on {action}.")
+    await ctx.send(msg.commands.toggle["dm"][action][state]())
