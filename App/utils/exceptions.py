@@ -37,3 +37,7 @@ class NoPingRoleError(RejoinCheckerError):
 class NoMaxJoinCountError(RejoinCheckerError):
     """Raised when the Rejoin Checker has no max join count set and any attempt is made to enable it."""
     pass
+
+class ActionIsBanError(RejoinCheckerError):
+    """Raised when the action is set to ban and any attempt is made to enable the Rejoin Checker."""
+    pass
