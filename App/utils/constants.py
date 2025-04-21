@@ -26,3 +26,22 @@ def get_commands_list(client):
             else:
                 commands[command.name].append(cog_name)
     return commands
+
+commandIdsPath = '../../env/command_ids.json'
+
+async def update_command_ids(client: discord.Client):
+    """
+    Fetches all application commands and writes their names and IDs to command_ids.json.
+
+    Parameters
+    ----------
+    client : discord.Client
+        The Discord client instance.
+    """
+    app_commands = await client.tree.fetch()
+    command_ids = {}
+    for command in app_commands:
+        command_ids[command.name] = command.id
+    with open(commandIdsPath, "w") as f:
+        json.dump(command_ids, f, indent=4)
+
