@@ -13,6 +13,7 @@ from discord.ext import commands
 from App.core import messages_core as msg
 from App.core import set_core as sc
 from App.utils import logger as logger
+from App.utils import formatting as fmt
 
 @client.hybrid_group(brief="Set various configurations for Dekomori.")
 @app_commands.default_permissions(manage_roles = True)
@@ -42,3 +43,26 @@ async def logchannel(ctx, channel: discord.TextChannel):
         guildLogger.error(f"{ctx.author.name} tried to set the log channel to a channel Dekomori can't send messages in.")
     guildLogger.info(f"{ctx.author.name} set the log channel to {channel.mention}.")
     await ctx.send(msg.commands.set["logchannel"]["valid"](channel.mention))
+
+@set.command(aliases=["st", "stalltimeout", "jointimer", "jointimeout"], brief="Set the stall timer for Dekomori.")
+@commands.has_permissions(manage_roles=True)
+async def stalltimer(ctx, time: int):
+    """Set the stall timer for Dekomori. This is the time in seconds a user has to complete the onboarding process before being kicked.
+    
+    Parameters
+    ----------
+    time : int
+        The time in seconds a user has to complete the onboarding process.
+    """
+    # TODO check
+    if time < 60:
+        await ctx.send(msg.commands.set["stalltimer"]["too_short"]())
+        return
+    elif time > 604800:
+        await ctx.send(msg.commands.set["stalltimer"]["too_long"]())
+        return
+    guildLogger = logger.getLogger(str(ctx.guild.id))
+    sc.set_stall_timeout(ctx.guild, time)
+    parsedTime = fmt.parse_duration(time)
+    guildLogger.info(f"{ctx.author.name} set the stall timer to {parsedTime} seconds.")
+    await ctx.send(msg.commands.set["stalltimer"]["valid"](parsedTime))
